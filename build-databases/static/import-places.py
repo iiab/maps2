@@ -1,4 +1,4 @@
-import csv, regex, requests, zipfile, json, os, unicodedata
+import csv, gzip, regex, requests, json, os, tarfile, unicodedata, zipfile
 from io import BytesIO, StringIO, TextIOWrapper
 from collections import defaultdict
 
@@ -142,8 +142,10 @@ def city_display_name(row):
         ])
 
 def write_cities(cities):
-    if not os.path.exists("output"):
-        os.mkdir("output")
+    TMP_OUTPUT_DIR = "output"
+
+    if not os.path.exists(TMP_OUTPUT_DIR):
+        os.mkdir(TMP_OUTPUT_DIR)
 
     outfile_data = defaultdict(list)
 
@@ -178,10 +180,15 @@ def write_cities(cities):
             outfile_data[prefix].append(entry)
 
     for prefix, entries in outfile_data.items():
-        with open(os.path.join("output", f"{prefix}.json"), "w") as outfile:
+        with gzip.open(os.path.join(TMP_OUTPUT_DIR, f"{prefix}.json.gz"), "wt") as outfile:
             outfile.write(json.dumps(entries, indent=2))
-    with open(os.path.join("output", f"index_metadata.json"), "w") as outfile:
+    with gzip.open(os.path.join(TMP_OUTPUT_DIR, f"index_metadata.json.gz"), "wt") as outfile:
         outfile.write(json.dumps({"stopwords": [""], "token_length": 3}, indent=2))
+
+    tar = tarfile.open("static-search.2025-12-10.pop-1k-cities.tar.gz", "w:gz")
+    for name in os.listdir(TMP_OUTPUT_DIR):
+        tar.add(os.path.join(TMP_OUTPUT_DIR, name))
+    tar.close()
 
 # TODO Add full country names if short (yes for "Italy", not for "The United States of America")
 # TODO Add countries as searchable entities.
