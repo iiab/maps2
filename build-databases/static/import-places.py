@@ -174,6 +174,7 @@ def get_token_prefixes(city_id, prefix_length):
         token_prefixes |= {
             t[:prefix_length] for t
             in regex.split('[^\p{L}]+', cleaned_name_component)
+            if t # don't want 0-length prefixes
         }
     return token_prefixes
 
@@ -189,7 +190,9 @@ def write_cities(cities):
 
         prefix_length = 3
 
-        for prefix in get_token_prefixes(city_id, prefix_length):
+        prefixes = get_token_prefixes(city_id, prefix_length)
+        assert prefixes, f"{city_id} has no prefixes"
+        for prefix in prefixes:
             outfile_data[prefix].append(entry)
 
     for prefix, entries in outfile_data.items():
