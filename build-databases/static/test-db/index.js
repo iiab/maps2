@@ -15,19 +15,36 @@ import { AddressTextualIndex } from "./static_search.js";
 import * as fs from "fs"
 import * as zlib from "zlib"
 
+// we'll be doing so many file reads, and the files are so small - we may as well cache all of it
+const fileCache = {}
+
 // Pretend to fetch a json/gz file from the server. Instead just find the
-// corresponding file in the file system.
+// corresponding file in the file system. Also cache every file we read.
 const fsFetchJson = path => new Promise((resolve, reject) => {
+    // read from cache instead
+    if (fileCache[path]) {
+        resolve(fileCache[path])
+        return
+    }
+
     // Fake 200-ish response
-    const found = text => resolve({
-        json: () => {
-            return JSON.parse(text)
-        },
-        ok: true,
-    })
+    const found = text => {
+        fileCache[path] = {
+            json: () => {
+                return JSON.parse(text)
+            },
+            ok: true,
+        }
+        resolve(fileCache[path])
+    }
 
     // Fake 404 response
-    const notFound = () => resolve({ok: false})
+    const notFound = () => {
+        fileCache[path] = {ok: false}
+        resolve(fileCache[path])
+    }
+
+    // console.log("reading", path)
 
     // First look for the *.json file
     fs.readFile(path, (err, data) => {
