@@ -10,7 +10,7 @@
  *   * Check out the repo and grab the js file as-is to make sure the test is accurate.
 */
 
-import { deepEqual } from 'assert';
+import { deepStrictEqual } from 'assert';
 import { AddressTextualIndex } from "./static_search.js";
 import * as fs from "fs"
 import * as zlib from "zlib"
@@ -73,13 +73,99 @@ const fsFetchJson = path => new Promise((resolve, reject) => {
     })
 })
 
+// list all of the files in the search index
+function* listIndexFiles(outputDir) {
+    const files = fs.readdirSync(outputDir)
+    for (const file of files) {
+        // strip the .gz since we don't request that part explicitly
+        const jsonFName = file.split('.gz')[0]
+        if (jsonFName === "index_metadata.json") continue;
+        yield `${outputDir}/${jsonFName}`
+    }
+}
+
+// wrap search such that it returns [] instead of throwing an exception
+async function search(engine, term) {
+    try {
+        return await engine.search(term)
+    } catch (e) {
+        const errStr = 'Error: Query string insufficient for the search'
+        if (e.toString().split('\n')[0] !== errStr) {
+            throw e
+        }
+        return []
+    }
+}
+
+// Allow for tests that skip certain entries based on token length.
+function skipEntry(entry, tokenLength, filter) {
+    // Generally we don't want to replicate this "file token" logic because it's
+    // part of what we are testing in the production code. However, in this case
+    // it's only for the purpose of splitting the test cases into groups. At the
+    // end of the day, we want them all to pass regardless, and we could ideally
+    // remove this function entirely.
+    const fileToken = entry['name'].normalize("NFD").replace(/\p{Diacritic}/gu, "")
+                       .replace(/^[^\p{L}]+/u, '')
+                       .split(/[^\p{L}]+/u)[0]
+
+    if (!filter({fileToken, tokenLength})) {
+        // console.log('no', fileToken, fileToken.length, entry['name'])
+        return true
+    }
+
+    // console.log('yes', fileToken, fileToken.length, entry)
+    return false
+}
+
+async function testBasic({engine}) {
+    const result = await engine.search("New York")
+    deepStrictEqual(result[0]["name"], "New York City")
+
+    deepStrictEqual((await engine.search("ZZZ")).length, 0)
+}
+
+// Test that every name in the search index that passes `filter` is searchable
+// with our current engine.
+async function testReachability({engine, indexMetadata, outputDir}, filter) {
+    const tokenLength = Number(indexMetadata['token_length'])
+
+    for (const file of listIndexFiles(outputDir)) {
+        const fileEntries = await (await fsFetchJson(file)).json()
+        // console.log(`reachability: looking for ${fileEntries.length} entries in ${file}`)
+        for (const entry of fileEntries) {
+            if (skipEntry(entry, tokenLength, filter)) {
+                continue
+            }
+            const result = await search(engine, entry['name'])
+            const visible = result.slice(0, 5)
+            deepStrictEqual(
+                result.some(r =>
+                    entry.name && entry.name === r.name &&
+                    entry.pop && entry.pop === r.pop &&
+                    entry.lat && entry.lat === r.lat &&
+                    entry.lon && entry.lon === r.lon
+                ),
+                true,
+                JSON.stringify(entry.name) + ":" + JSON.stringify(result.map(a => a.name)),
+            )
+        }
+    }
+}
+
 async function main() {
-  const engine = new AddressTextualIndex({}, "../output", fsFetchJson, {})
+    const outputDir = "../output"
+    const engine = new AddressTextualIndex({}, outputDir, fsFetchJson, {})
+    const indexMetadata = await (await fsFetchJson(`${outputDir}/index_metadata.json`)).json()
+    const testSetup = {outputDir, engine, indexMetadata}
 
-  const result = await engine.search("New York")
-  deepEqual(result[0]["name"], "New York City")
+    await testBasic(testSetup)
 
-  deepEqual((await engine.search("ZZZ")).length, 0)
+    // Test reachability. Splitting out two problem cases.
+    //
+    // 1) Within the right tokenLength (3) - fails I think because of issues parsing out tokens
+    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length >= tokenLength)
+    // 2) Less than tokenLength - fails because we don't handle the requesting of such files yet.
+    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length < tokenLength)
 }
 
 main()
