@@ -118,6 +118,7 @@ function skipEntry(entry, tokenLength, filter) {
 }
 
 async function testBasic({engine}) {
+    console.log("testBasic")
     const result = await engine.search("New York")
     deepStrictEqual(result[0]["name"], "New York City")
 
@@ -126,7 +127,8 @@ async function testBasic({engine}) {
 
 // Test that every name in the search index that passes `filter` is searchable
 // with our current engine.
-async function testReachability({engine, indexMetadata, outputDir}, filter) {
+async function testReachability({engine, indexMetadata, outputDir}, filter, description) {
+    console.log("testReachability:", description)
     const tokenLength = Number(indexMetadata['token_length'])
 
     for (const file of listIndexFiles(outputDir)) {
@@ -146,7 +148,7 @@ async function testReachability({engine, indexMetadata, outputDir}, filter) {
                     entry.lon && entry.lon === r.lon
                 ),
                 true,
-                JSON.stringify(entry.name) + ":" + JSON.stringify(result.map(a => a.name)),
+                "Cannot find \"" + entry.name + "\" in " + JSON.stringify(result.map(a => a.name)),
             )
         }
     }
@@ -163,9 +165,9 @@ async function main() {
     // Test reachability. Splitting out two problem cases.
     //
     // 1) Within the right tokenLength (3) - fails I think because of issues parsing out tokens
-    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length >= tokenLength)
+    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length >= tokenLength, "normal token length")
     // 2) Less than tokenLength - fails because we don't handle the requesting of such files yet.
-    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length < tokenLength)
+    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length < tokenLength, "shorter token length")
 }
 
 main()
