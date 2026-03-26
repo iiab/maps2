@@ -16,6 +16,7 @@ import * as fs from "fs"
 import * as zlib from "zlib"
 
 // we'll be doing so many file reads, and the files are so small - we may as well cache all of it
+// fileCache[path] = contents
 const fileCache = {}
 
 // Pretend to fetch a json/gz file from the server. Instead just find the
@@ -97,8 +98,15 @@ async function search(engine, term) {
     }
 }
 
+// Determine whether to skip the entry.
 // Allow for tests that skip certain entries based on token length.
-function skipEntry(entry, tokenLength, filter) {
+function skipEntry(
+  entry,             // the thing being searched for
+  fileTokenLength,   // length of token prefix used for (ideal) json file names (for short names, actual files could be shorter!)
+  filter,            // based on the fileTokenLength, the actual file token, and maybe other
+) {
+    // Base filename for search index shard. i.e. <fileToken>.json
+    //
     // Generally we don't want to replicate this "file token" logic because it's
     // part of what we are testing in the production code. However, in this case
     // it's only for the purpose of splitting the test cases into groups. At the
@@ -108,7 +116,7 @@ function skipEntry(entry, tokenLength, filter) {
                        .replace(/^[^\p{L}]+/u, '')
                        .split(/[^\p{L}]+/u)[0]
 
-    if (!filter({fileToken, tokenLength})) {
+    if (!filter({fileToken, fileTokenLength})) {
         // console.log('no', fileToken, fileToken.length, entry['name'])
         return true
     }
@@ -129,13 +137,16 @@ async function testBasic({engine}) {
 // with our current engine.
 async function testReachability({engine, indexMetadata, outputDir}, filter, description) {
     console.log("testReachability:", description)
-    const tokenLength = Number(indexMetadata['token_length'])
+
+    // Get the token length from the metadata file within the database
+    const fileTokenLength = Number(indexMetadata['token_length'])
 
     for (const file of listIndexFiles(outputDir)) {
         const fileEntries = await (await fsFetchJson(file)).json()
+
         // console.log(`reachability: looking for ${fileEntries.length} entries in ${file}`)
         for (const entry of fileEntries) {
-            if (skipEntry(entry, tokenLength, filter)) {
+            if (skipEntry(entry, fileTokenLength, filter)) {
                 continue
             }
             const result = await search(engine, entry['name'])
@@ -164,10 +175,10 @@ async function main() {
 
     // Test reachability. Splitting out two problem cases.
     //
-    // 1) Within the right tokenLength (3) - fails I think because of issues parsing out tokens
-    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length >= tokenLength, "normal token length")
-    // 2) Less than tokenLength - fails because we don't handle the requesting of such files yet.
-    await testReachability(testSetup, ({fileToken, tokenLength}) => fileToken.length < tokenLength, "shorter token length")
+    // 1) Within the right fileTokenLength (3) - fails I think because of issues parsing out tokens
+    await testReachability(testSetup, ({fileToken, fileTokenLength}) => fileToken.length >= fileTokenLength, "normal token length")
+    // 2) Less than fileTokenLength - fails because we don't handle the requesting of such files yet.
+    await testReachability(testSetup, ({fileToken, fileTokenLength}) => fileToken.length < fileTokenLength, "shorter token length")
 }
 
 main()
