@@ -167,7 +167,7 @@ def get_token_prefixes(city_id, prefix_length):
         cleaned_name_component = u"".join([
             c for c
             in unicodedata.normalize('NFKD', name_component)
-            if not unicodedata.combining(c)
+            if not unicodedata.combining(c) and not c == '`'
         ]).lower()
 
         # Split into tokens (words-ish) and get each prefix
