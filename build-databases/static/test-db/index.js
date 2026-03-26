@@ -159,7 +159,7 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
                     entry.lon && entry.lon === r.lon
                 ),
                 true,
-                "Cannot find \"" + entry.name + "\" in " + JSON.stringify(result.map(a => a.name)),
+                `Cannot find "${entry.name}" (from ${file.split('/').slice(-1)}) in ${engine.currentFileToken}.json: ` + JSON.stringify(result.map(a => a.name)),
             )
         }
     }
