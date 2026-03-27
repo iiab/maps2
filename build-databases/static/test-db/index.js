@@ -130,9 +130,23 @@ function skipEntry(
 }
 
 async function testBasic({engine}) {
+    let result
+
     console.log("testBasic")
-    const result = await engine.search("New York")
+    result = await engine.search("New York")
     deepStrictEqual(result[0]["name"], "New York City")
+
+    // City name alone (no state or country) still works if it happens to be the best match
+    result = await engine.search("Chicago")
+    deepStrictEqual({
+      name: result[0]["name"],
+      admin1: result[0]["admin1"],
+      country: result[0]["country"],
+    }, {
+      name: "Chicago",
+      admin1: "Illinois",
+      country: "US",
+    })
 
     deepStrictEqual((await engine.search("ZZZ")).length, 0)
 }
