@@ -19,6 +19,10 @@ import * as zlib from "zlib"
 // fileCache[path] = contents
 const fileCache = {}
 
+// Number of visible results when searching for something. We generally
+// want to make sure that what we're looking for is visible.
+const visibleResultsSize = 5
+
 // Pretend to fetch a json/gz file from the server. Instead just find the
 // corresponding file in the file system. Also cache every file we read.
 const fsFetchJson = path => new Promise((resolve, reject) => {
@@ -150,9 +154,9 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
                 continue
             }
             const result = await search(engine, entry['name'])
-            const visible = result.slice(0, 5)
+            const visibleResults = result.slice(0, visibleResultsSize)
             deepStrictEqual(
-                result.some(r =>
+                visibleResults.some(r =>
                     entry.name && entry.name === r.name &&
                     entry.pop && entry.pop === r.pop &&
                     entry.lat && entry.lat === r.lat &&
