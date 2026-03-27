@@ -185,7 +185,8 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
 
 async function main() {
     const outputDir = "../output"
-    const engine = new AddressTextualIndex({}, outputDir, fsFetchJson, {})
+    const debug = {}
+    const engine = new AddressTextualIndex({}, outputDir, fsFetchJson, {}, debug)
     const indexMetadata = await (await fsFetchJson(`${outputDir}/index_metadata.json`)).json()
     const testSetup = {outputDir, engine, indexMetadata}
 
