@@ -1,0 +1,1 @@
+../../../..//iiab/roles/maps/files/static_search.js
