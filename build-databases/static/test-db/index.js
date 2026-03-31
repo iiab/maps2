@@ -15,6 +15,18 @@ import { AddressTextualIndex } from "./static_search.js";
 import * as fs from "fs"
 import * as zlib from "zlib"
 
+class MockMap {
+  constructor() {
+    this.center = {lng: 0, lat: 0}
+  }
+  getCenter() {
+    return this.center
+  }
+  setCenter(center) {
+    this.center = center
+  }
+}
+
 // we'll be doing so many file reads, and the files are so small - we may as well cache all of it
 // fileCache[path] = contents
 const fileCache = {}
