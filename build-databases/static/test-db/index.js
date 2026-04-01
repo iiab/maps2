@@ -316,29 +316,39 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
 
         // console.log(`reachability: looking for ${fileEntries.length} entries in ${file}`)
         for (const entry of fileEntries) {
-            const entryId = getEntryId(entry)
-            if (seen.has(entryId)) {
+            entry.entryId = getEntryId(entry)
+            if (seen.has(entry.entryId)) {
                 continue
             }
-            seen.add(entryId)
+            seen.add(entry.entryId)
             if (skipEntry(entry, fileTokenLength, filter)) {
                 continue
             }
 
-            const term = `${entry.name} ${entry.admin1 || ''}`
+            const query = `${entry.name} ${entry.admin1 || ''}`
 
-            const result = await search(engine, term)
+            const result = await search(engine, query)
             const visibleResults = result.slice(0, visibleResultsSize)
+            for (const x of visibleResults) {
+                x.entryId = getEntryId(x)
+            }
             deepStrictEqual(
                 visibleResults.some(r =>
-                    entryId == getEntryId(r) &&
+                    entry.entryId == r.entryId &&
 
                     // Not checking if entry.admin1 is truthy; it's optional
                     // Not checking if entry.pop is truthy; it's sometimes 0? or missing?
                     entry.name && entry.country && entry.lat && entry.lon
                 ),
                 true,
-                `Cannot find "${term}" (from ${file.split('/').slice(-1)}) in ${engine.debugOut.lastFileToken}.json: ` + JSON.stringify(result.map(a => a.name)),
+                JSON.stringify({
+                    fromFile: file.split('/').slice(-1),
+                    debugOut: engine.debugOut,
+                    query,
+                    result,
+                    want:
+                    entry
+                }, null, 2),
             )
         }
     }
