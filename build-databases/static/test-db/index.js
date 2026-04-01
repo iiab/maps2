@@ -308,15 +308,19 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
     // Get the token length from the metadata file within the database
     const fileTokenLength = Number(indexMetadata['token_length'])
 
-    const entryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
+    const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
+    const seen = new Set()
 
     for (const file of listIndexFiles(outputDir)) {
         const fileEntries = await (await fsFetchJson(file)).json()
 
         // console.log(`reachability: looking for ${fileEntries.length} entries in ${file}`)
         for (const entry of fileEntries) {
-            // TODO don't duplicate tests? How to do this?
-            // * have keys I guess based on the same confirmation criteria.
+            const entryId = getEntryId(entry)
+            if (seen.has(entryId)) {
+                continue
+            }
+            seen.add(entryId)
             if (skipEntry(entry, fileTokenLength, filter)) {
                 continue
             }
@@ -327,7 +331,7 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
             const visibleResults = result.slice(0, visibleResultsSize)
             deepStrictEqual(
                 visibleResults.some(r =>
-                    entryId(entry) == entryId(r) &&
+                    entryId == getEntryId(r) &&
 
                     // Not checking if entry.admin1 is truthy; it's optional
                     // Not checking if entry.pop is truthy; it's sometimes 0? or missing?
