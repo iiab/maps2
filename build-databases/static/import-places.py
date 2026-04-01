@@ -163,11 +163,16 @@ def get_token_prefixes(city_id, prefix_length):
         # search engine. We only care about that here because we want to make
         # sure the correct file comes up when the user starts typing a name.
 
+        # These should be characters that function the same way as diacritics.
+        # Stuff that should not split a term in two. Rather, stuff we could
+        # reasonably ignore and it would keep a word intact with the same meaning.
+        ignored_characters = ['`', '\u02bb']
+
         # Normalize each character
         cleaned_name_component = u"".join([
             c for c
-            in unicodedata.normalize('NFKD', name_component)
-            if not unicodedata.combining(c) and c not in ['`', '\u02bb']
+            in unicodedata.normalize('NFD', name_component) # ?
+            if not unicodedata.combining(c) and c not in ignored_characters
         ]).lower()
 
         # Split into tokens (words-ish) and get each prefix
@@ -207,9 +212,11 @@ def write_cities(cities):
     tar.close()
 
 # TODO Add full country names if short (yes for "Italy", not for "The United States of America")
+# TODO actually keep full country names AND country codes. But maybe *display* country codes if country name is long.
 # TODO Add countries as searchable entities.
 # * Gather all of the cities in that country and pick one with a "median" location (want to pick one to make sure it's in the country in question)
 # TODO admin1s too, why not. "Minnesota".
+# TODO keep admin1 codes too if they're human friendly? for searching.
 
 admin1_names = fetch_admin1_names()
 zip_data = BytesIO(requests.get("https://download.geonames.org/export/dump/cities1000.zip").content)
