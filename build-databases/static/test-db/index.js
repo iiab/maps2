@@ -249,7 +249,7 @@ async function testExactMatchFactor({engine}) {
 
     // Make sure we got the expected exact_match_factor
     deepStrictEqual(
-      engine.debugOut.sortFactors[`${result[0].name}.${result[0].admin1 || ""}.${result[0].country}.${result[0].lat}.${result[0].lon}`]['exact_match_factor'],
+      engine.debugOut.sortFactors[`${result[0].name}...${result[0].admin1 || ""}...${result[0].country}...${result[0].pop || 0}...${result[0].lat}...${result[0].lon}`]['exact_match_factor'],
       12,
       JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
     )
@@ -308,6 +308,8 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
     // Get the token length from the metadata file within the database
     const fileTokenLength = Number(indexMetadata['token_length'])
 
+    const entryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
+
     for (const file of listIndexFiles(outputDir)) {
         const fileEntries = await (await fsFetchJson(file)).json()
 
@@ -325,23 +327,11 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
             const visibleResults = result.slice(0, visibleResultsSize)
             deepStrictEqual(
                 visibleResults.some(r =>
-                    entry.name &&
-                    entry.name === r.name &&
+                    entryId(entry) == entryId(r) &&
 
                     // Not checking if entry.admin1 is truthy; it's optional
-                    entry.admin1 === r.admin1 &&
-
-                    entry.country &&
-                    entry.country === r.country &&
-
                     // Not checking if entry.pop is truthy; it's sometimes 0? or missing?
-                    entry.pop === r.pop &&
-
-                    entry.lat &&
-                    entry.lat === r.lat &&
-
-                    entry.lon &&
-                    entry.lon === r.lon
+                    entry.name && entry.country && entry.lat && entry.lon
                 ),
                 true,
                 `Cannot find "${term}" (from ${file.split('/').slice(-1)}) in ${engine.debugOut.lastFileToken}.json: ` + JSON.stringify(result.map(a => a.name)),
