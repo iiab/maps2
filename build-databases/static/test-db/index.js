@@ -165,8 +165,143 @@ async function testBasic({engine}) {
     deepStrictEqual((await engine.search("ZZZ")).length, 0)
 }
 
-// Test that every name in the search index that passes `filter` is searchable
-// with our current engine.
+async function testWeirdCharacters({engine}) {
+    // These are a couple characters that gave us trouble before. They are in
+    // the beginning of the first word, leading the entry to not show up in the
+    // database file that corresponds to the first word.
+    // Note that here we are not concerned with sorting, but whether we can
+    // reach the result at all. We might rely on "exact sorting" factor here
+    // but we are not testing that it works.
+    // Also note that the resolution to this issue is in the generation of the
+    // database rather than the querying.
+    console.log("testWeirdCharacters")
+
+    // Try searching with and without the backtick (and also try without any diacritics,
+    // for the heck of it)
+    // We put in a term for the admin1 to disambiguate
+    for (const query of ["ta`\u016b manu", "ta\u016b manu", "tau manu"]) {
+      const result = await engine.search(query)
+      const want = {
+        name: "Ta`\u016b",
+        admin1: "Manu'a",
+        country: "AS",
+      }
+      const got = {
+        name: result[0]["name"],
+        admin1: result[0]["admin1"],
+        country: result[0]["country"],
+      }
+      deepStrictEqual(
+        got, want, JSON.stringify({query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2),
+      )
+    }
+
+    // Try searching with and without the fancy single quote (\u02bb) (and also try
+    // without any diacritics, for the heck of it)
+    for (const query of ["Ha\u02bbik\u016b", "haik\u016b", "haiku"]) {
+      const result = await engine.search(query)
+      const want = {
+        name: "Ha\u02bbik\u016b",
+        admin1: "Hawaii",
+        country: "US"
+      }
+      const got = {
+        name: result[0]["name"],
+        admin1: result[0]["admin1"],
+        country: result[0]["country"],
+      }
+      deepStrictEqual(
+        got, want, JSON.stringify({query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2),
+      )
+    }
+}
+
+async function testExactMatchFactor({engine}) {
+    console.log("testExactMatchFactor")
+    let result
+
+    // Aber, Wales is an entry that (for whatever reason) has a zero population, at
+    // least in the latest data as of this writing. "Aber" also happens to be the beginning
+    // of the names of many other towns in Wales. (Aberystwyth, Abertillery, Aberporth,
+    // etc) Thus, without the exact_match_factor, searching for this query would put Aber,
+    // Wales at the end of the results, i.e. not visible to the user.
+    result = await engine.search("Aber Wales GB", {matching: false, sorting: true})
+    const want = {
+      name: "Aber",
+      admin1: "Wales",
+      country: "GB",
+
+      // If this ever stops being true, this stops being a useful test (maybe
+      // we can have create a test data file at that point)
+      pop: "0",
+    }
+    const got = {
+      name: result[0]["name"],
+      admin1: result[0]["admin1"],
+      country: result[0]["country"],
+      pop: result[0]["pop"],
+    }
+
+    // Make sure we got the right one
+    deepStrictEqual(
+      got, want, JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
+    )
+
+    // Make sure we got the expected exact_match_factor
+    deepStrictEqual(
+      engine.debugOut.sortFactors[`${result[0].name}.${result[0].admin1 || ""}.${result[0].country}.${result[0].lat}.${result[0].lon}`]['exact_match_factor'],
+      12,
+      JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
+    )
+
+    // If I search for most of (not exactly) "Washington" I get Seattle first
+    // because it has the highest population among results.
+    result = await engine.search("washingto", {matching: false, sorting: true})
+    deepStrictEqual(
+      result[0].name, "Seattle", JSON.stringify({result: result, debugOut: engine.debugOut}, null, 2),
+    )
+
+    // If I search for *exactly* "Washington" I get a bunch of cities called "Washington"
+    // before I get Seattle because city name takes precedence before admin1.
+    result = await engine.search("washington", {matching: false, sorting: true})
+    deepStrictEqual(
+      result.slice(0,10).map(entry => entry.name),
+      Array(10).fill("Washington"),
+      JSON.stringify({result: result.slice(0, 10), debugOut: engine.debugOut}, null, 2),
+    )
+}
+
+async function testDistanceFactor({engine}) {
+    console.log("testDistanceFactor (TODO)")
+// TODO Test that distance gives us a useful factor. Probably test the Dovers of the world, a lot of them have similar populations
+//     Hopefully we can balance all of the factors with the help of all of these factor tests.
+// TODO Make sure I got my "lng" vs "lon" in order. I'm using both in different parts of the code. Should I be?
+}
+
+async function testPopulationFactor({engine}) {
+    console.log("testPopulationFactor (TODO)")
+// TODO - test that I get the desired "population factor". Probably logarithmic?
+}
+
+// Test that every name in the search index is searchable with our current
+// engine. Unique or populous cities are easy to find. Obscure cities with
+// common names may be tough. That's why we make sure that everything is
+// findable, i.e. in the visible results (first 5 or so), when the user
+// searches for city name and admin1 (and if admin1 doesn't exist, city name alone).
+//
+// While searching with country name may be a common way to try to find obscure
+// cities, it may not always be sufficient. But we do hope that searching with
+// admin1 (state name) is sufficient. I.e. we don't ever want it to be necessary
+// to include both state and country. If things get really dire, we might have to
+// start looking at admin2.
+//
+// We also rely on the "exact match factor" here in the background. So, in some cases
+// it will probably be necessary to make an exact match to find something.
+//
+// The `filter` is there to split our corpus so that we can have multiple tests for
+// different categories of entries (as of this writing, we're splitting between those
+// having short first terms and those not). Perhaps this will go away and we'll have
+// just one test once we fix everything.
 async function testReachability({engine, indexMetadata, outputDir}, filter, description) {
     console.log("testReachability:", description)
 
@@ -178,20 +313,38 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
 
         // console.log(`reachability: looking for ${fileEntries.length} entries in ${file}`)
         for (const entry of fileEntries) {
+            // TODO don't duplicate tests? How to do this?
+            // * have keys I guess based on the same confirmation criteria.
             if (skipEntry(entry, fileTokenLength, filter)) {
                 continue
             }
-            const result = await search(engine, entry['name'])
+
+            const term = `${entry.name} ${entry.admin1 || ''}`
+
+            const result = await search(engine, term)
             const visibleResults = result.slice(0, visibleResultsSize)
             deepStrictEqual(
                 visibleResults.some(r =>
-                    entry.name && entry.name === r.name &&
-                    entry.pop && entry.pop === r.pop &&
-                    entry.lat && entry.lat === r.lat &&
-                    entry.lon && entry.lon === r.lon
+                    entry.name &&
+                    entry.name === r.name &&
+
+                    // Not checking if entry.admin1 is truthy; it's optional
+                    entry.admin1 === r.admin1 &&
+
+                    entry.country &&
+                    entry.country === r.country &&
+
+                    // Not checking if entry.pop is truthy; it's sometimes 0? or missing?
+                    entry.pop === r.pop &&
+
+                    entry.lat &&
+                    entry.lat === r.lat &&
+
+                    entry.lon &&
+                    entry.lon === r.lon
                 ),
                 true,
-                `Cannot find "${entry.name}" (from ${file.split('/').slice(-1)}) in ${engine.currentFileToken}.json: ` + JSON.stringify(result.map(a => a.name)),
+                `Cannot find "${term}" (from ${file.split('/').slice(-1)}) in ${engine.debugOut.lastFileToken}.json: ` + JSON.stringify(result.map(a => a.name)),
             )
         }
     }
@@ -199,12 +352,17 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
 
 async function main() {
     const outputDir = "../output"
-    const debug = {}
-    const engine = new AddressTextualIndex({}, outputDir, fsFetchJson, {}, debug)
+    const windowObj = {}
+    const map = new MockMap()
+    const engine = new AddressTextualIndex(map, outputDir, fsFetchJson, windowObj)
     const indexMetadata = await (await fsFetchJson(`${outputDir}/index_metadata.json`)).json()
     const testSetup = {outputDir, engine, indexMetadata}
 
     await testBasic(testSetup)
+    await testWeirdCharacters(testSetup)
+    await testDistanceFactor(testSetup)
+    await testPopulationFactor(testSetup)
+    await testExactMatchFactor(testSetup)
 
     // Test reachability. Splitting out two problem cases.
     //
