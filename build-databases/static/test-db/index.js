@@ -142,24 +142,26 @@ function skipEntry(
 }
 
 async function testBasic({engine}) {
-    let result
-
     console.log("testBasic")
-    result = await engine.search("New York")
-    deepStrictEqual(result[0]["name"], "New York City")
 
-    // City name alone (no state or country) still works if it happens to be the best match
-    result = await engine.search("Chicago")
-    deepStrictEqual({
+    // The query "yor" matches New York City despite many cities named York and many cities in New York state.
+    // (Note that we want to avoid exact matches to avoid relying on that sorting factor.)
+    const result = await engine.search("yor")
+    const want = {
+      name: "New York City",
+      admin1: "New York",
+      country: "US",
+    }
+    const got = {
       name: result[0]["name"],
       admin1: result[0]["admin1"],
       country: result[0]["country"],
-    }, {
-      name: "Chicago",
-      admin1: "Illinois",
-      country: "US",
-    })
+    }
+    deepStrictEqual(got, want, JSON.stringify({
+      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
 
+    // Nonsense match gets us nothing
     deepStrictEqual((await engine.search("ZZZ")).length, 0)
 }
 
