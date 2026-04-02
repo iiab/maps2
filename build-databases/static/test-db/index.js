@@ -398,7 +398,7 @@ async function makeSetup(outputDir) {
 
 async function main() {
     const realOutputDir = "../output"  // Real data that we want to test for problems
-    const testOutputDir = "testOutput" // Test data (based on real data) that's useful to test for edge cases
+    const testOutputDir = "testDB"     // Test data (based on real data) that's useful to test for edge cases
 
     const testDBSetup = await makeSetup(testOutputDir)
     const realDBSetup = await makeSetup(realOutputDir)
