@@ -1,0 +1,162 @@
+[
+  {
+    "lat": "-32.8074",
+    "lon": "151.4275",
+    "pop": "2275",
+    "name": "Abermain",
+    "admin1": "New South Wales",
+    "country": "AU"
+  },
+  {
+    "lat": "-32.7",
+    "lon": "151.53333",
+    "pop": "5301",
+    "name": "Aberglasslyn",
+    "admin1": "New South Wales",
+    "country": "AU"
+  },
+  {
+    "lat": "-32.16588",
+    "lon": "150.89003",
+    "pop": "2021",
+    "name": "Aberdeen",
+    "admin1": "New South Wales",
+    "country": "AU"
+  },
+  {
+    "lat": "-32.84112",
+    "lon": "151.38168",
+    "pop": "2419",
+    "name": "Aberdare",
+    "admin1": "New South Wales",
+    "country": "AU"
+  },
+  {
+    "lat": "-33.38867",
+    "lon": "149.5458",
+    "pop": "1095",
+    "name": "Abercrombie",
+    "admin1": "New South Wales",
+    "country": "AU"
+  },
+  {
+    "lat": "52.41548",
+    "lon": "-4.08292",
+    "pop": "18749",
+    "name": "Aberystwyth",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.72981",
+    "lon": "-3.13432",
+    "pop": "10946",
+    "name": "Abertillery",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "52.13248",
+    "lon": "-4.54173",
+    "pop": "1648",
+    "name": "Aberporth",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.88139",
+    "lon": "-4.41556",
+    "pop": "0",
+    "name": "Abernant",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.54",
+    "lon": "-3.59556",
+    "pop": "10083",
+    "name": "Aberkenfig",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "53.28436",
+    "lon": "-3.5822",
+    "pop": "17769",
+    "name": "Abergele",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.82098",
+    "lon": "-3.01743",
+    "pop": "14651",
+    "name": "Abergavenny",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.68892",
+    "lon": "-3.34178",
+    "pop": "3547",
+    "name": "Aberfan",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.71438",
+    "lon": "-3.44918",
+    "pop": "31135",
+    "name": "Aberdare",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.64548",
+    "lon": "-3.32727",
+    "pop": "5983",
+    "name": "Abercynon",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.64733",
+    "lon": "-3.13476",
+    "pop": "10118",
+    "name": "Abercarn",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.72361",
+    "lon": "-3.36611",
+    "pop": "5061",
+    "name": "Abercanaid",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "52.24247",
+    "lon": "-4.25871",
+    "pop": "1422",
+    "name": "Aberaeron",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "53.23333",
+    "lon": "-4.01667",
+    "pop": "0",
+    "name": "Aber",
+    "admin1": "Wales",
+    "country": "GB"
+  },
+  {
+    "lat": "51.59583",
+    "lon": "-3.26833",
+    "pop": "6504",
+    "name": "Abertridwr",
+    "admin1": "Wales",
+    "country": "GB"
+  }
+]

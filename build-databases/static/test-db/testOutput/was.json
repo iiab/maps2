@@ -1,0 +1,209 @@
+[
+  {
+    "lat": "47.60621",
+    "lon": "-122.33207",
+    "pop": "780995",
+    "name": "Seattle",
+    "admin1": "Washington",
+    "country": "US"
+  },
+  {
+    "lat": "12.55837",
+    "lon": "-70.03816",
+    "pop": "4390",
+    "name": "Washington",
+    "country": "AW"
+  },
+  {
+    "lat": "54.9",
+    "lon": "-1.51667",
+    "pop": "53526",
+    "name": "Washington",
+    "admin1": "England",
+    "country": "GB"
+  },
+  {
+    "lat": "53.22425",
+    "lon": "-0.47485",
+    "pop": "6463",
+    "name": "Washingborough",
+    "admin1": "England",
+    "country": "GB"
+  },
+  {
+    "lat": "-41.27148",
+    "lon": "173.27044",
+    "pop": "3080",
+    "name": "Washington Valley",
+    "admin1": "Nelson Region",
+    "country": "NZ"
+  },
+  {
+    "lat": "11.6508",
+    "lon": "122.4322",
+    "pop": "5731",
+    "name": "New Washington",
+    "admin1": "Western Visayas",
+    "country": "PH"
+  },
+  {
+    "lat": "11.67778",
+    "lon": "122.4075",
+    "pop": "2440",
+    "name": "Brgy. Mabilo, New Washington",
+    "admin1": "Western Visayas",
+    "country": "PH"
+  },
+  {
+    "lat": "38.89511",
+    "lon": "-77.03637",
+    "pop": "689545",
+    "name": "Washington",
+    "admin1": "District of Columbia",
+    "country": "US"
+  },
+  {
+    "lat": "26.13259",
+    "lon": "-80.18116",
+    "pop": "1672",
+    "name": "Washington Park",
+    "admin1": "Florida",
+    "country": "US"
+  },
+  {
+    "lat": "33.73679",
+    "lon": "-82.73931",
+    "pop": "3981",
+    "name": "Washington",
+    "admin1": "Georgia",
+    "country": "US"
+  },
+  {
+    "lat": "38.63505",
+    "lon": "-90.09289",
+    "pop": "3990",
+    "name": "Washington Park",
+    "admin1": "Illinois",
+    "country": "US"
+  },
+  {
+    "lat": "38.65922",
+    "lon": "-87.17279",
+    "pop": "12078",
+    "name": "Washington",
+    "admin1": "Indiana",
+    "country": "US"
+  },
+  {
+    "lat": "39.81806",
+    "lon": "-97.05086",
+    "pop": "1085",
+    "name": "Washington",
+    "admin1": "Kansas",
+    "country": "US"
+  },
+  {
+    "lat": "38.05006",
+    "lon": "-85.54579",
+    "pop": "14028",
+    "name": "Mount Washington",
+    "admin1": "Kentucky",
+    "country": "US"
+  },
+  {
+    "lat": "38.70734",
+    "lon": "-77.02303",
+    "pop": "23717",
+    "name": "Fort Washington",
+    "admin1": "Maryland",
+    "country": "US"
+  },
+  {
+    "lat": "39.36427",
+    "lon": "-76.67275",
+    "pop": "4111",
+    "name": "Mount Washington",
+    "admin1": "Maryland",
+    "country": "US"
+  },
+  {
+    "lat": "38.55811",
+    "lon": "-91.01209",
+    "pop": "14050",
+    "name": "Washington",
+    "admin1": "Missouri",
+    "country": "US"
+  },
+  {
+    "lat": "35.54655",
+    "lon": "-77.05217",
+    "pop": "9788",
+    "name": "Washington",
+    "admin1": "North Carolina",
+    "country": "US"
+  },
+  {
+    "lat": "39.53645",
+    "lon": "-83.43908",
+    "pop": "14019",
+    "name": "Washington Court House",
+    "admin1": "Ohio",
+    "country": "US"
+  },
+  {
+    "lat": "38.71345",
+    "lon": "-78.15944",
+    "pop": "128",
+    "name": "Washington",
+    "admin1": "Virginia",
+    "country": "US"
+  },
+  {
+    "lat": "39.26119",
+    "lon": "-81.6718",
+    "pop": "1175",
+    "name": "Washington",
+    "admin1": "West Virginia",
+    "country": "US"
+  },
+  {
+    "lat": "41.63148",
+    "lon": "-73.31067",
+    "pop": "3466",
+    "name": "Washington",
+    "admin1": "Connecticut",
+    "country": "US"
+  },
+  {
+    "lat": "41.29918",
+    "lon": "-91.69294",
+    "pop": "7408",
+    "name": "Washington",
+    "admin1": "Iowa",
+    "country": "US"
+  },
+  {
+    "lat": "41.93808",
+    "lon": "-88.40452",
+    "pop": "22560",
+    "name": "Wasco",
+    "admin1": "Illinois",
+    "country": "US"
+  },
+  {
+    "lat": "40.9192",
+    "lon": "-89.2912",
+    "pop": "1128",
+    "name": "Washburn",
+    "admin1": "Illinois",
+    "country": "US"
+  },
+  {
+    "lat": "40.70365",
+    "lon": "-89.40731",
+    "pop": "16664",
+    "name": "Washington",
+    "admin1": "Illinois",
+    "country": "US"
+  }
+]

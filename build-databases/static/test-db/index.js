@@ -230,16 +230,11 @@ async function testExactMatchFactor({engine}) {
       name: "Aber",
       admin1: "Wales",
       country: "GB",
-
-      // If this ever stops being true, this stops being a useful test (maybe
-      // we can have create a test data file at that point)
-      pop: "0",
     }
     const got = {
       name: result[0]["name"],
       admin1: result[0]["admin1"],
       country: result[0]["country"],
-      pop: result[0]["pop"],
     }
 
     // Make sure we got the right one
@@ -354,26 +349,33 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
     }
 }
 
-async function main() {
-    const outputDir = "../output"
-    const windowObj = {}
+async function makeSetup(outputDir) {
     const map = new MockMap()
+    const windowObj = {}
     const engine = new AddressTextualIndex(map, outputDir, fsFetchJson, windowObj)
     const indexMetadata = await (await fsFetchJson(`${outputDir}/index_metadata.json`)).json()
-    const testSetup = {outputDir, engine, indexMetadata}
+    return {outputDir, engine, indexMetadata}
+}
 
-    await testBasic(testSetup)
-    await testWeirdCharacters(testSetup)
-    await testDistanceFactor(testSetup)
-    await testPopulationFactor(testSetup)
-    await testExactMatchFactor(testSetup)
+async function main() {
+    const realOutputDir = "../output"  // Real data that we want to test for problems
+    const testOutputDir = "testOutput" // Test data (based on real data) that's useful to test for edge cases
+
+    const testDBSetup = await makeSetup(testOutputDir)
+    const realDBSetup = await makeSetup(realOutputDir)
+
+    await testBasic(realDBSetup)
+    await testExactMatchFactor(testDBSetup)
+    await testWeirdCharacters(realDBSetup) // real DB because we want to make sure that the database generator puts things in the right json file
+    await testDistanceFactor(testDBSetup)
+    await testPopulationFactor(testDBSetup)
 
     // Test reachability. Splitting out two problem cases.
     //
     // 1) Within the right fileTokenLength (3) - fails I think because of issues parsing out tokens
-    await testReachability(testSetup, ({fileToken, fileTokenLength}) => fileToken.length >= fileTokenLength, "normal token length")
+    await testReachability(realDBSetup, ({fileToken, fileTokenLength}) => fileToken.length >= fileTokenLength, "normal token length")
     // 2) Less than fileTokenLength - fails because we don't handle the requesting of such files yet.
-    await testReachability(testSetup, ({fileToken, fileTokenLength}) => fileToken.length < fileTokenLength, "shorter token length")
+    await testReachability(realDBSetup, ({fileToken, fileTokenLength}) => fileToken.length < fileTokenLength, "shorter token length")
 }
 
 main()
