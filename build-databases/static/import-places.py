@@ -178,7 +178,7 @@ def get_token_prefixes(city_id, prefix_length):
         # Split into tokens (words-ish) and get each prefix
         token_prefixes |= {
             t[:prefix_length] for t
-            in regex.split('[^\p{L}]+', cleaned_name_component)
+            in regex.split('[^\p{L}|^\p{N}]+', cleaned_name_component)
             if t # don't want 0-length prefixes
         }
     return token_prefixes

@@ -1,0 +1,98 @@
+[
+  {
+    "lat": "45.73375",
+    "lon": "4.80259",
+    "pop": "21893",
+    "name": "Sainte-Foy-l\u00e8s-Lyon",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.74906",
+    "lon": "4.84789",
+    "pop": "520774",
+    "name": "Lyon",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.63779",
+    "lon": "4.3889",
+    "pop": "4911",
+    "name": "Chazelles-sur-Lyon",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.75423",
+    "lon": "4.83089",
+    "pop": "31303",
+    "name": "Lyon 02",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.76124",
+    "lon": "4.85184",
+    "pop": "102725",
+    "name": "Lyon 03",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.77507",
+    "lon": "4.82712",
+    "pop": "36064",
+    "name": "Lyon 04",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.76106",
+    "lon": "4.82677",
+    "pop": "49664",
+    "name": "Lyon 05",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.76788",
+    "lon": "4.85064",
+    "pop": "52862",
+    "name": "Lyon 06",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.74525",
+    "lon": "4.84197",
+    "pop": "82573",
+    "name": "Lyon 07",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.73626",
+    "lon": "4.86866",
+    "pop": "86154",
+    "name": "Lyon 08",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.77255",
+    "lon": "4.80326",
+    "pop": "51983",
+    "name": "Lyon 09",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  },
+  {
+    "lat": "45.76758",
+    "lon": "4.8345",
+    "pop": "29641",
+    "name": "Lyon 01",
+    "admin1": "Rh\u00f4ne-Alpes",
+    "country": "FR"
+  }
+]

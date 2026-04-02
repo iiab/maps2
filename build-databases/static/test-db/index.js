@@ -269,6 +269,43 @@ async function testExactMatchFactor({engine}) {
     )
 }
 
+async function testNumbers({engine}) {
+    console.log("testNumbers")
+
+    // Now we're going to test some similar looking towns (and/or Universities?)
+    // with numbers in the name to make sure I get the expected score, assuming
+    // we're even supposed to match.
+
+    // A convenience function
+    const checkLyon = (query, result, testLyon, expectedScore) => {
+        // Make sure we got the expected exact_match_factor
+        deepStrictEqual(
+          engine.debugOut.sortFactors[getEntryId(testLyon)]['exact_match_factor'],
+          expectedScore,
+          JSON.stringify({query, result, debugOut: engine.debugOut}, null, 2),
+        )
+    }
+    let lyon, lyon_02, lyon_08, result, query
+
+    query = "Lyon"
+    result = await engine.search(query, {matching: false, sorting: true});
+    [lyon] = result.filter(r => r.name === "Lyon");
+    [lyon_02] = result.filter(r => r.name === "Lyon 02");
+    [lyon_08] = result.filter(r => r.name === "Lyon 08")
+    checkLyon(query, result, lyon, 8)    // Exact match of city name
+    checkLyon(query, result, lyon_02, 0) // "Lyon" is merely part of "Lyon 02"
+    checkLyon(query, result, lyon_08, 0) // "Lyon" is merely part of "Lyon 08"
+
+    query = "Lyon 02"
+    result = await engine.search(query, {matching: false, sorting: true});
+    [lyon] = result.filter(r => r.name === "Lyon");
+    [lyon_02] = result.filter(r => r.name === "Lyon 02");
+    [lyon_08] = result.filter(r => r.name === "Lyon 08")
+    deepStrictEqual(lyon, undefined)      // "Lyon 02" includes "02" which is not present in "Lyon" so no match
+    deepStrictEqual(lyon_08, undefined)   // "Lyon 02" includes "02" which is not present in "Lyon 08" so no match
+    checkLyon(query, result, lyon_02, 8)  // Exact match of city name
+}
+
 async function testDistanceFactor({engine}) {
     console.log("testDistanceFactor (TODO)")
 // TODO Test that distance gives us a useful factor. Probably test the Dovers of the world, a lot of them have similar populations
@@ -368,6 +405,7 @@ async function main() {
 
     await testBasic(realDBSetup)
     await testExactMatchFactor(testDBSetup)
+    await testNumbers(testDBSetup)
     await testWeirdCharacters(realDBSetup) // real DB because we want to make sure that the database generator puts things in the right json file
     await testDistanceFactor(testDBSetup)
     await testPopulationFactor(testDBSetup)
