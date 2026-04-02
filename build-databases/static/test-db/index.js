@@ -141,6 +141,10 @@ function skipEntry(
     return false
 }
 
+// This function turns an entry into a unique string that identifies it.
+// static_search.js has the same logic.
+const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
+
 async function testBasic({engine}) {
     console.log("testBasic")
 
@@ -241,10 +245,9 @@ async function testExactMatchFactor({engine}) {
     deepStrictEqual(
       got, want, JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
     )
-
     // Make sure we got the expected exact_match_factor
     deepStrictEqual(
-      engine.debugOut.sortFactors[`${result[0].name}...${result[0].admin1 || ""}...${result[0].country}...${result[0].pop || 0}...${result[0].lat}...${result[0].lon}`]['exact_match_factor'],
+      engine.debugOut.sortFactors[getEntryId(result[0])]['exact_match_factor'],
       12,
       JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
     )
@@ -303,7 +306,6 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
     // Get the token length from the metadata file within the database
     const fileTokenLength = Number(indexMetadata['token_length'])
 
-    const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
     const seen = new Set()
 
     for (const file of listIndexFiles(outputDir)) {
