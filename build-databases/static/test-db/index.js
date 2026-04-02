@@ -415,6 +415,9 @@ async function main() {
     // 1) Within the right fileTokenLength (3) - fails I think because of issues parsing out tokens
     await testReachability(realDBSetup, ({fileToken, fileTokenLength}) => fileToken.length >= fileTokenLength, "normal token length")
     // 2) Less than fileTokenLength - fails because we don't handle the requesting of such files yet.
+    // TODO - if we do this, we need to shorten the mininmum amount of characters typed into the search bar before showing results?
+    // unless the total length will always be more than 3, so we should just keep it as-is? So I guess it would be like, "ab " and
+    // that's enough for a search. Which is fine. If there's anything, it should come up with something.
     await testReachability(realDBSetup, ({fileToken, fileTokenLength}) => fileToken.length < fileTokenLength, "shorter token length")
 }
 
