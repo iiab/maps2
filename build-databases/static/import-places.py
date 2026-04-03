@@ -166,7 +166,7 @@ def get_token_prefixes(city_id, prefix_length):
         # These should be characters that function the same way as diacritics.
         # Stuff that should not split a term in two. Rather, stuff we could
         # reasonably ignore and it would keep a word intact with the same meaning.
-        ignored_characters = ['`', '\u02bb']
+        ignored_characters = ['`', '\u02bb', '\'']
 
         # Normalize each character
         cleaned_name_component = u"".join([

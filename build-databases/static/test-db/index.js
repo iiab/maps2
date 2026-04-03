@@ -129,7 +129,8 @@ function skipEntry(
     // end of the day, we want them all to pass regardless, and we could ideally
     // remove this function entirely.
     const fileToken = entry['name'].normalize("NFD").replace(/\p{Diacritic}/gu, "")
-                       .replace(/^[^\p{L}]+/u, '')
+                       .replace(/^[^\p{N}|\p{L}]+/u, '')
+                       .replace("'", '')
                        .split(/[^\p{L}]+/u)[0]
 
     if (!filter({fileToken, fileTokenLength})) {
@@ -529,8 +530,7 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
                     debugOut: engine.debugOut,
                     query,
                     result,
-                    want:
-                    entry
+                    want: entry,
                 }, null, 2),
             )
         }
