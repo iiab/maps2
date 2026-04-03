@@ -1,0 +1,209 @@
+[
+  {
+    "lat": "-33.87083",
+    "lon": "151.27917",
+    "pop": "3766",
+    "name": "Dover Heights",
+    "admin1": "New South Wales",
+    "country": "AU"
+  },
+  {
+    "lat": "-35.024",
+    "lon": "138.53695",
+    "pop": "2809",
+    "name": "Dover Gardens",
+    "admin1": "South Australia",
+    "country": "AU"
+  },
+  {
+    "lat": "-16.72028",
+    "lon": "-52.31944",
+    "pop": "6956",
+    "name": "Doverl\u00e2ndia",
+    "admin1": "Goi\u00e1s",
+    "country": "BR"
+  },
+  {
+    "lat": "51.01991",
+    "lon": "-113.99294",
+    "pop": "10795",
+    "name": "Dover",
+    "admin1": "Alberta",
+    "country": "CA"
+  },
+  {
+    "lat": "53.57409",
+    "lon": "-113.55885",
+    "pop": "2030",
+    "name": "Dovercourt",
+    "admin1": "Alberta",
+    "country": "CA"
+  },
+  {
+    "lat": "43.66568",
+    "lon": "-79.43854",
+    "pop": "36625",
+    "name": "Dovercourt-Wallace Emerson-Junction",
+    "admin1": "Ontario",
+    "country": "CA"
+  },
+  {
+    "lat": "52.90526",
+    "lon": "-1.8248",
+    "pop": "1622",
+    "name": "Doveridge",
+    "admin1": "England",
+    "country": "GB"
+  },
+  {
+    "lat": "51.93649",
+    "lon": "1.27831",
+    "pop": "1001",
+    "name": "Dovercourt",
+    "admin1": "England",
+    "country": "GB"
+  },
+  {
+    "lat": "51.12598",
+    "lon": "1.31257",
+    "pop": "41709",
+    "name": "Dover",
+    "admin1": "England",
+    "country": "GB"
+  },
+  {
+    "lat": "45.36428",
+    "lon": "9.54445",
+    "pop": "3659",
+    "name": "Dovera",
+    "admin1": "Lombardy",
+    "country": "IT"
+  },
+  {
+    "lat": "1.30458",
+    "lon": "103.78031",
+    "pop": "11290",
+    "name": "Dover",
+    "country": "SG"
+  },
+  {
+    "lat": "35.40147",
+    "lon": "-93.11434",
+    "pop": "1398",
+    "name": "Dover",
+    "admin1": "Arkansas",
+    "country": "US"
+  },
+  {
+    "lat": "39.15817",
+    "lon": "-75.52437",
+    "pop": "39403",
+    "name": "Dover",
+    "admin1": "Delaware",
+    "country": "US"
+  },
+  {
+    "lat": "27.99419",
+    "lon": "-82.21953",
+    "pop": "3702",
+    "name": "Dover",
+    "admin1": "Florida",
+    "country": "US"
+  },
+  {
+    "lat": "39.99123",
+    "lon": "-74.06375",
+    "pop": "1239",
+    "name": "Dover Beaches North",
+    "admin1": "New Jersey",
+    "country": "US"
+  },
+  {
+    "lat": "39.95567",
+    "lon": "-74.0743",
+    "pop": "1209",
+    "name": "Dover Beaches South",
+    "admin1": "New Jersey",
+    "country": "US"
+  },
+  {
+    "lat": "36.48783",
+    "lon": "-87.83836",
+    "pop": "1457",
+    "name": "Dover",
+    "admin1": "Tennessee",
+    "country": "US"
+  },
+  {
+    "lat": "42.24593",
+    "lon": "-71.28283",
+    "pop": "2265",
+    "name": "Dover",
+    "admin1": "Massachusetts",
+    "country": "US"
+  },
+  {
+    "lat": "45.18339",
+    "lon": "-69.22699",
+    "pop": "2528",
+    "name": "Dover-Foxcroft",
+    "admin1": "Maine",
+    "country": "US"
+  },
+  {
+    "lat": "43.19786",
+    "lon": "-70.87367",
+    "pop": "30880",
+    "name": "Dover",
+    "admin1": "New Hampshire",
+    "country": "US"
+  },
+  {
+    "lat": "40.88399",
+    "lon": "-74.5621",
+    "pop": "18346",
+    "name": "Dover",
+    "admin1": "New Jersey",
+    "country": "US"
+  },
+  {
+    "lat": "41.74121",
+    "lon": "-73.57652",
+    "pop": "1323",
+    "name": "Dover Plains",
+    "admin1": "New York",
+    "country": "US"
+  },
+  {
+    "lat": "40.52062",
+    "lon": "-81.47401",
+    "pop": "12899",
+    "name": "Dover",
+    "admin1": "Ohio",
+    "country": "US"
+  },
+  {
+    "lat": "40.00176",
+    "lon": "-76.85025",
+    "pop": "1991",
+    "name": "Dover",
+    "admin1": "Pennsylvania",
+    "country": "US"
+  },
+  {
+    "lat": "42.94369",
+    "lon": "-72.80399",
+    "pop": "1437",
+    "name": "Dover",
+    "admin1": "Vermont",
+    "country": "US"
+  },
+  {
+    "lat": "39.11763",
+    "lon": "-75.48393",
+    "pop": "3450",
+    "name": "Dover Base Housing",
+    "admin1": "Delaware",
+    "country": "US"
+  }
+]

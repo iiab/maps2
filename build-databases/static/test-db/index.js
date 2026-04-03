@@ -252,11 +252,13 @@ async function testExactMatchFactor({engine}) {
       JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
     )
 
-    // If I search for most of (not exactly) "Washington" I get Seattle first
-    // because it has the highest population among results.
+    // If I search for most of (not exactly) "Washington" I get Seattle in the first
+    // couple results because it has the highest population among them. (Washington DC
+    // is a very close second, and distance factor can make that show up before Seattle)
     result = await engine.search("washingto", {matching: false, sorting: true})
+    const [seattle] = result.slice(0, 2).filter(r => r.name === "Seattle")
     deepStrictEqual(
-      result[0].name, "Seattle", JSON.stringify({result: result, debugOut: engine.debugOut}, null, 2),
+      Boolean(seattle), true, JSON.stringify({result: result, debugOut: engine.debugOut}, null, 2),
     )
 
     // If I search for *exactly* "Washington" I get a bunch of cities called "Washington"
@@ -319,7 +321,63 @@ async function testNumbers({engine}) {
 }
 
 async function testDistanceFactor({engine}) {
-    console.log("testDistanceFactor (TODO)")
+    console.log("testDistanceFactor")
+
+    // Test searching for "dover" when pointing our map right at Dover England,
+    // Dover New Hampshire, and Dover Delaware. Expect the nearest Dover to
+    // show up first in the results.
+
+    let result, query, want, got
+
+    engine.map.setCenter({lat: 50, lng: 0})
+    result = await engine.search("dover", {matching: false, sorting: true})
+    want = {
+      name: "Dover",
+      admin1: "England",
+      country: "GB",
+    }
+    got = {
+      name: result[0]["name"],
+      admin1: result[0]["admin1"],
+      country: result[0]["country"],
+    }
+    deepStrictEqual(got, want, JSON.stringify({
+      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
+
+    engine.map.setCenter({lat: 40, lng: -75})
+    result = await engine.search("dover", {matching: false, sorting: true})
+    want = {
+      name: "Dover",
+      admin1: "Delaware",
+      country: "US",
+    }
+    got = {
+      name: result[0]["name"],
+      admin1: result[0]["admin1"],
+      country: result[0]["country"],
+    }
+    deepStrictEqual(got, want, JSON.stringify({
+      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
+
+    engine.map.setCenter({lat: 43, lng: -70})
+    result = await engine.search("dover", {matching: false, sorting: true})
+    want = {
+      name: "Dover",
+      admin1: "New Hampshire",
+      country: "US",
+    }
+    got = {
+      name: result[0]["name"],
+      admin1: result[0]["admin1"],
+      country: result[0]["country"],
+    }
+    deepStrictEqual(got, want, JSON.stringify({
+      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
+
+// TODO - Maybe make a balance test. Exact match vs distance vs population?
 // TODO Test that distance gives us a useful factor. Probably test the Dovers of the world, a lot of them have similar populations
 //     Hopefully we can balance all of the factors with the help of all of these factor tests.
 // TODO Make sure I got my "lng" vs "lon" in order. I'm using both in different parts of the code. Should I be?
