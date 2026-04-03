@@ -461,13 +461,15 @@ async function testPopulationFactor({engine}) {
 // engine. Unique or populous cities are easy to find. Obscure cities with
 // common names may be tough. That's why we make sure that everything is
 // findable, i.e. in the visible results (first 5 or so), when the user
-// searches for city name and admin1 (and if admin1 doesn't exist, city name alone).
+// searches for city name and admin1 (and if admin1 doesn't exist, city name
+// and country name).
 //
 // While searching with country name may be a common way to try to find obscure
 // cities, it may not always be sufficient. But we do hope that searching with
-// admin1 (state name) is sufficient. I.e. we don't ever want it to be necessary
-// to include both state and country. If things get really dire, we might have to
-// start looking at admin2.
+// admin1 (state name) or country name is sufficient. I.e. we don't ever want it
+// to be necessary to include both. On the other hand, once our data includes all
+// the towns called "Franklin" in Pennsylvania, we might have to start looking at
+// admin2 (county name).
 //
 // We also rely on the "exact match factor" here in the background. So, in some cases
 // it will probably be necessary to make an exact match to find something.
@@ -498,7 +500,15 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
                 continue
             }
 
-            const query = `${entry.name} ${entry.admin1 || ''}`
+            const query = entry.admin1 ? `${entry.name} ${entry.admin1}` : `${entry.name} ${entry.country}`
+
+            // Go to the opposite side of the world. We should be able to find
+            // it even with other places having location bias
+            if (Number(entry.lon) > 0) {
+              engine.map.setCenter({lat: -Number(entry.lat), lng: Number(entry.lon) - 180})
+            } else {
+              engine.map.setCenter({lat: -Number(entry.lat), lng: Number(entry.lon) + 180})
+            }
 
             const result = await search(engine, query)
             const visibleResults = result.slice(0, visibleResultsSize)
