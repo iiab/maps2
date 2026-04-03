@@ -267,6 +267,18 @@ async function testExactMatchFactor({engine}) {
       Array(10).fill("Washington"),
       JSON.stringify({result: result.slice(0, 10), debugOut: engine.debugOut}, null, 2),
     )
+
+    // If I search for an entry with no admin1, I don't want to get the bonus
+    // of adding an admin1.
+    result = await engine.search("dover", {matching: false, sorting: true});
+    const [dover_sg] = result.filter(r => r.name === "Dover" && r.country === "SG")
+
+    // Make sure we got the expected exact_match_factor
+    deepStrictEqual(
+      engine.debugOut.sortFactors[getEntryId(dover_sg)]['exact_match_factor'],
+      8,
+      JSON.stringify({debugOut: engine.debugOut}, null, 2),
+    )
 }
 
 async function testNumbers({engine}) {
