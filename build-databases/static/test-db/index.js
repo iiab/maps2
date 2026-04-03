@@ -377,6 +377,75 @@ async function testDistanceFactor({engine}) {
       want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
     )
 
+    // If I'm looking directly at Paris, Texas and search for "paris", my first two results should be:
+    // 1) Paris, Texas (Population ~24,000)
+    // 2) Paris, France (Population ~2,000,000)
+    //
+    // However if I veer off to New Orleans, Louisiana, then Paris France should overtake Paris, Texas
+    //
+    // On the other hand, Paris, Idaho has a population of 500. Even if you're looking at it,
+    // Paris, France shows up first, but at least Paris, Idaho shows up second.
+
+    engine.map.setCenter({lat: 34, lng: -95}) // Near Paris, Texas
+    result = await engine.search("paris", {matching: false, sorting: true})
+    want = [{
+      name: "Paris",
+      admin1: "Texas",
+      country: "US",
+    }, {
+      name: "Paris",
+      admin1: "\u00cele-de-France",
+      country: "FR",
+    }]
+    got = result.slice(0, 2).map(r => ({
+      name: r.name,
+      admin1: r.admin1,
+      country: r.country,
+    }))
+    deepStrictEqual(got, want, JSON.stringify({
+      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
+
+    engine.map.setCenter({lat: 30, lng: -90}) // Near New Orleans, Louisiana (far but not super far from Paris, Texas)
+    result = await engine.search("paris", {matching: false, sorting: true})
+    want = [{
+      name: "Paris",
+      admin1: "\u00cele-de-France",
+      country: "FR",
+    }, {
+      name: "Paris",
+      admin1: "Texas",
+      country: "US",
+    }]
+    got = result.slice(0, 2).map(r => ({
+      name: r.name,
+      admin1: r.admin1,
+      country: r.country,
+    }))
+    deepStrictEqual(got, want, JSON.stringify({
+      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
+
+    engine.map.setCenter({lat: 42, lng: -111}) // Near Paris, Idaho
+    result = await engine.search("paris", {matching: false, sorting: true})
+    want = [{
+      name: "Paris",
+      admin1: "\u00cele-de-France",
+      country: "FR",
+    }, {
+      name: "Paris",
+      admin1: "Idaho",
+      country: "US",
+    }]
+    got = result.slice(0, 2).map(r => ({
+      name: r.name,
+      admin1: r.admin1,
+      country: r.country,
+    }))
+    deepStrictEqual(got, want, JSON.stringify({
+      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
+
 // TODO - Maybe make a balance test. Exact match vs distance vs population?
 // TODO Test that distance gives us a useful factor. Probably test the Dovers of the world, a lot of them have similar populations
 //     Hopefully we can balance all of the factors with the help of all of these factor tests.
