@@ -219,6 +219,24 @@ async function testWeirdCharacters({engine}) {
         got, want, JSON.stringify({query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2),
       )
     }
+
+    // Try searching with and without the single quote
+    for (const query of ["N'dalatando", "Ndalatando"]) {
+      const result = await engine.search(query)
+      const want = {
+        name: "N'dalatando",
+        admin1: "Cuanza Norte",
+        country: "AO"
+      }
+      const got = {
+        name: result[0]["name"],
+        admin1: result[0]["admin1"],
+        country: result[0]["country"],
+      }
+      deepStrictEqual(
+        got, want, JSON.stringify({query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2),
+      )
+    }
 }
 
 async function testExactMatchFactor({engine}) {
