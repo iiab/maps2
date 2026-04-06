@@ -101,19 +101,6 @@ function* listIndexFiles(outputDir) {
     }
 }
 
-// wrap search such that it returns [] instead of throwing an exception
-async function search(engine, term) {
-    try {
-        return await engine.search(term)
-    } catch (e) {
-        const errStr = 'Error: Query string insufficient for the search'
-        if (e.toString().split('\n')[0] !== errStr) {
-            throw e
-        }
-        return []
-    }
-}
-
 // Determine whether to skip the entry.
 // Allow for tests that skip certain entries based on token length.
 function skipEntry(
@@ -529,7 +516,7 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
               engine.map.setCenter({lat: -Number(entry.lat), lng: Number(entry.lon) + 180})
             }
 
-            const result = await search(engine, query)
+            const result = await engine.search(query)
             const visibleResults = result.slice(0, visibleResultsSize)
             for (const x of visibleResults) {
                 x.entryId = getEntryId(x)
