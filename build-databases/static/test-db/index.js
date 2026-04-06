@@ -232,53 +232,28 @@ async function testDistanceFactor({engine}) {
 
     let result, query, want, got
 
+    query = "dover"
+
     engine.map.setCenter({lat: 50, lng: 0})
-    result = await engine.search("dover", {matching: false, sorting: true})
-    want = {
+    await expectFirstResult(engine, query, {
       name: "Dover",
       admin1: "England",
       country: "GB",
-    }
-    got = {
-      name: result[0]["name"],
-      admin1: result[0]["admin1"],
-      country: result[0]["country"],
-    }
-    deepStrictEqual(got, want, JSON.stringify({
-      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
-    )
+    })
 
     engine.map.setCenter({lat: 40, lng: -75})
-    result = await engine.search("dover", {matching: false, sorting: true})
-    want = {
+    await expectFirstResult(engine, query, {
       name: "Dover",
       admin1: "Delaware",
       country: "US",
-    }
-    got = {
-      name: result[0]["name"],
-      admin1: result[0]["admin1"],
-      country: result[0]["country"],
-    }
-    deepStrictEqual(got, want, JSON.stringify({
-      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
-    )
+    })
 
     engine.map.setCenter({lat: 43, lng: -70})
-    result = await engine.search("dover", {matching: false, sorting: true})
-    want = {
+    await expectFirstResult(engine, query, {
       name: "Dover",
       admin1: "New Hampshire",
       country: "US",
-    }
-    got = {
-      name: result[0]["name"],
-      admin1: result[0]["admin1"],
-      country: result[0]["country"],
-    }
-    deepStrictEqual(got, want, JSON.stringify({
-      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
-    )
+    })
 
     // If I'm looking directly at Paris, Texas and search for "paris", my first two results should be:
     // 1) Paris, Texas (Population ~24,000)
