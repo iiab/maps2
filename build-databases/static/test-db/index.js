@@ -267,9 +267,11 @@ async function testDistanceFactor({engine}) {
     // On the other hand, Paris, Idaho has a population of 500. Even if you're looking at it,
     // Paris, France shows up first, but at least Paris, Idaho shows up second.
 
-    engine.map.setCenter({lat: 34, lng: -95}) // Near Paris, Texas
-    result = await engine.search("paris", {matching: false, sorting: true})
-    want = [{
+    query = "paris"
+
+    // Near Paris, Texas
+    engine.map.setCenter({lat: 34, lng: -95})
+    await expectFirstResults(engine, query, [{
       name: "Paris",
       admin1: "Texas",
       country: "US",
@@ -277,19 +279,11 @@ async function testDistanceFactor({engine}) {
       name: "Paris",
       admin1: "\u00cele-de-France",
       country: "FR",
-    }]
-    got = result.slice(0, 2).map(r => ({
-      name: r.name,
-      admin1: r.admin1,
-      country: r.country,
-    }))
-    deepStrictEqual(got, want, JSON.stringify({
-      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
-    )
+    }])
 
-    engine.map.setCenter({lat: 30, lng: -90}) // Near New Orleans, Louisiana (far but not super far from Paris, Texas)
-    result = await engine.search("paris", {matching: false, sorting: true})
-    want = [{
+    // Near New Orleans, Louisiana (far but not super far from Paris, Texas)
+    engine.map.setCenter({lat: 30, lng: -90})
+    await expectFirstResults(engine, query, [{
       name: "Paris",
       admin1: "\u00cele-de-France",
       country: "FR",
@@ -297,19 +291,11 @@ async function testDistanceFactor({engine}) {
       name: "Paris",
       admin1: "Texas",
       country: "US",
-    }]
-    got = result.slice(0, 2).map(r => ({
-      name: r.name,
-      admin1: r.admin1,
-      country: r.country,
-    }))
-    deepStrictEqual(got, want, JSON.stringify({
-      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
-    )
+    }])
 
-    engine.map.setCenter({lat: 42, lng: -111}) // Near Paris, Idaho
-    result = await engine.search("paris", {matching: false, sorting: true})
-    want = [{
+    // Near Paris, Idaho
+    engine.map.setCenter({lat: 42, lng: -111})
+    await expectFirstResults(engine, query, [{
       name: "Paris",
       admin1: "\u00cele-de-France",
       country: "FR",
@@ -317,15 +303,7 @@ async function testDistanceFactor({engine}) {
       name: "Paris",
       admin1: "Idaho",
       country: "US",
-    }]
-    got = result.slice(0, 2).map(r => ({
-      name: r.name,
-      admin1: r.admin1,
-      country: r.country,
-    }))
-    deepStrictEqual(got, want, JSON.stringify({
-      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
-    )
+    }])
 
 // TODO - Maybe make a balance test. Exact match vs distance vs population?
 // TODO Test that distance gives us a useful factor. Probably test the Dovers of the world, a lot of them have similar populations
