@@ -50,16 +50,19 @@ function skipEntry(
 // static_search.js has the same logic.
 const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
 
-async function expectFirstResult(engine, query, want) {
+async function expectFirstResults(engine, query, want) {
     const result = await engine.search(query, {matching: false, sorting: true})
     if (result.length === 0) {
       throw "Query got no results:\n" + JSON.stringify({query, want}, null, 2)
     }
-    const got = {
-      name: result[0]["name"],
-      admin1: result[0]["admin1"],
-      country: result[0]["country"],
-    }
+    // `got` should be the first so many items of `results`,
+    // and it should be the same length as `want`. If there
+    // are fewer results available, it will just contain all of the results.
+    const got = result.slice(0, want.length).map(r => ({
+      name: r["name"],
+      admin1: r["admin1"],
+      country: r["country"],
+    }))
     deepStrictEqual(got, want, JSON.stringify({
       query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
     )
@@ -88,11 +91,11 @@ async function testBasic({engine}) {
 
     // The query "yor" matches New York City despite many cities named York and many cities in New York state.
     // (Note that we want to avoid exact matches to avoid relying on that sorting factor.)
-    await expectFirstResult(engine, "yor", {
+    await expectFirstResults(engine, "yor", [{
       name: "New York City",
       admin1: "New York",
       country: "US",
-    })
+    }])
 
     // Nonsense match gets us nothing
     await expectEmpty(engine, "ZZZ")
@@ -113,30 +116,30 @@ async function testWeirdCharacters({engine}) {
     // for the heck of it)
     // We put in a term for the admin1 to disambiguate
     for (const query of ["ta`\u016b manu", "ta\u016b manu", "tau manu"]) {
-      await expectFirstResult(engine, query, {
+      await expectFirstResults(engine, query, [{
         name: "Ta`\u016b",
         admin1: "Manu'a",
         country: "AS",
-      })
+      }])
     }
 
     // Try searching with and without the fancy single quote (\u02bb) (and also try
     // without any diacritics, for the heck of it)
     for (const query of ["Ha\u02bbik\u016b", "haik\u016b", "haiku"]) {
-      await expectFirstResult(engine, query, {
+      await expectFirstResults(engine, query, [{
         name: "Ha\u02bbik\u016b",
         admin1: "Hawaii",
         country: "US"
-      })
+      }])
     }
 
     // Try searching with and without the single quote
     for (const query of ["N'dalatando", "Ndalatando"]) {
-      await expectFirstResult(engine, query, {
+      await expectFirstResults(engine, query, [{
         name: "N'dalatando",
         admin1: "Cuanza Norte",
         country: "AO"
-      })
+      }])
     }
 }
 
@@ -151,11 +154,11 @@ async function testExactMatchFactor({engine}) {
     // Wales at the end of the results, i.e. not visible to the user.
 
     query = "Aber Wales GB";
-    ({entry, sortFactors} = await expectFirstResult(engine, query, {
+    ({entry, sortFactors} = await expectFirstResults(engine, query, [{
       name: "Aber",
       admin1: "Wales",
       country: "GB",
-    }))
+    }]))
     expectPreviousQuerySortFactor(sortFactors, entry, 'exact_match_factor', 12, query)
 
     // If I search for most of (not exactly) "Washington" I get Seattle in the first
@@ -235,25 +238,25 @@ async function testDistanceFactor({engine}) {
     query = "dover"
 
     engine.map.setCenter({lat: 50, lng: 0})
-    await expectFirstResult(engine, query, {
+    await expectFirstResults(engine, query, [{
       name: "Dover",
       admin1: "England",
       country: "GB",
-    })
+    }])
 
     engine.map.setCenter({lat: 40, lng: -75})
-    await expectFirstResult(engine, query, {
+    await expectFirstResults(engine, query, [{
       name: "Dover",
       admin1: "Delaware",
       country: "US",
-    })
+    }])
 
     engine.map.setCenter({lat: 43, lng: -70})
-    await expectFirstResult(engine, query, {
+    await expectFirstResults(engine, query, [{
       name: "Dover",
       admin1: "New Hampshire",
       country: "US",
-    })
+    }])
 
     // If I'm looking directly at Paris, Texas and search for "paris", my first two results should be:
     // 1) Paris, Texas (Population ~24,000)
