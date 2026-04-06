@@ -133,17 +133,8 @@ function skipEntry(
 // static_search.js has the same logic.
 const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
 
-async function testBasic({engine}) {
-    console.log("testBasic")
-
-    // The query "yor" matches New York City despite many cities named York and many cities in New York state.
-    // (Note that we want to avoid exact matches to avoid relying on that sorting factor.)
-    const result = await engine.search("yor")
-    const want = {
-      name: "New York City",
-      admin1: "New York",
-      country: "US",
-    }
+async function expectFirstResult(engine, query, want) {
+    const result = await engine.search(query)
     const got = {
       name: result[0]["name"],
       admin1: result[0]["admin1"],
@@ -152,9 +143,25 @@ async function testBasic({engine}) {
     deepStrictEqual(got, want, JSON.stringify({
       want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
     )
+}
+
+async function expectEmpty(engine, query) {
+    await deepStrictEqual((await engine.search(query)).length, 0)
+}
+
+async function testBasic({engine}) {
+    console.log("testBasic")
+
+    // The query "yor" matches New York City despite many cities named York and many cities in New York state.
+    // (Note that we want to avoid exact matches to avoid relying on that sorting factor.)
+    await expectFirstResult(engine, "yor", {
+      name: "New York City",
+      admin1: "New York",
+      country: "US",
+    })
 
     // Nonsense match gets us nothing
-    deepStrictEqual((await engine.search("ZZZ")).length, 0)
+    await expectEmpty(engine, "ZZZ")
 }
 
 async function testWeirdCharacters({engine}) {
