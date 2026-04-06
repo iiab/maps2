@@ -52,6 +52,9 @@ const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country
 
 async function expectFirstResult(engine, query, want) {
     const result = await engine.search(query, {matching: false, sorting: true})
+    if (result.length === 0) {
+      throw "Query got no results:\n" + JSON.stringify({query, want}, null, 2)
+    }
     const got = {
       name: result[0]["name"],
       admin1: result[0]["admin1"],
