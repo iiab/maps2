@@ -141,7 +141,7 @@ async function expectFirstResult(engine, query, want) {
       country: result[0]["country"],
     }
     deepStrictEqual(got, want, JSON.stringify({
-      want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+      query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
     )
 }
 
@@ -179,57 +179,30 @@ async function testWeirdCharacters({engine}) {
     // for the heck of it)
     // We put in a term for the admin1 to disambiguate
     for (const query of ["ta`\u016b manu", "ta\u016b manu", "tau manu"]) {
-      const result = await engine.search(query)
-      const want = {
+      await expectFirstResult(engine, query, {
         name: "Ta`\u016b",
         admin1: "Manu'a",
         country: "AS",
-      }
-      const got = {
-        name: result[0]["name"],
-        admin1: result[0]["admin1"],
-        country: result[0]["country"],
-      }
-      deepStrictEqual(
-        got, want, JSON.stringify({query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2),
-      )
+      })
     }
 
     // Try searching with and without the fancy single quote (\u02bb) (and also try
     // without any diacritics, for the heck of it)
     for (const query of ["Ha\u02bbik\u016b", "haik\u016b", "haiku"]) {
-      const result = await engine.search(query)
-      const want = {
+      await expectFirstResult(engine, query, {
         name: "Ha\u02bbik\u016b",
         admin1: "Hawaii",
         country: "US"
-      }
-      const got = {
-        name: result[0]["name"],
-        admin1: result[0]["admin1"],
-        country: result[0]["country"],
-      }
-      deepStrictEqual(
-        got, want, JSON.stringify({query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2),
-      )
+      })
     }
 
     // Try searching with and without the single quote
     for (const query of ["N'dalatando", "Ndalatando"]) {
-      const result = await engine.search(query)
-      const want = {
+      await expectFirstResult(engine, query, {
         name: "N'dalatando",
         admin1: "Cuanza Norte",
         country: "AO"
-      }
-      const got = {
-        name: result[0]["name"],
-        admin1: result[0]["admin1"],
-        country: result[0]["country"],
-      }
-      deepStrictEqual(
-        got, want, JSON.stringify({query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2),
-      )
+      })
     }
 }
 
