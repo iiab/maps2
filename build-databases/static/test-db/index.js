@@ -51,7 +51,7 @@ function skipEntry(
 const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
 
 async function expectFirstResult(engine, query, want) {
-    const result = await engine.search(query)
+    const result = await engine.search(query, {matching: false, sorting: true})
     const got = {
       name: result[0]["name"],
       admin1: result[0]["admin1"],
@@ -59,6 +59,20 @@ async function expectFirstResult(engine, query, want) {
     }
     deepStrictEqual(got, want, JSON.stringify({
       query, want, got, result: result.slice(0, 5), debugOut: engine.debugOut}, null, 2)
+    )
+
+    // return stuff for subsequent tests
+    return {
+      entry: result[0],
+      sortFactors: engine.debugOut.sortFactors,
+    }
+}
+
+function expectPreviousQuerySortFactor(sortFactors, entry, factorName, want, query) {
+    deepStrictEqual(
+      want,
+      sortFactors[getEntryId(entry)][factorName],
+      JSON.stringify({sortFactors, entry, factorName, query}, null, 2),
     )
 }
 
@@ -125,35 +139,21 @@ async function testWeirdCharacters({engine}) {
 
 async function testExactMatchFactor({engine}) {
     console.log("testExactMatchFactor")
-    let result
+    let result, entry, sortFactors, query
 
     // Aber, Wales is an entry that (for whatever reason) has a zero population, at
     // least in the latest data as of this writing. "Aber" also happens to be the beginning
     // of the names of many other towns in Wales. (Aberystwyth, Abertillery, Aberporth,
     // etc) Thus, without the exact_match_factor, searching for this query would put Aber,
     // Wales at the end of the results, i.e. not visible to the user.
-    result = await engine.search("Aber Wales GB", {matching: false, sorting: true})
-    const want = {
+
+    query = "Aber Wales GB";
+    ({entry, sortFactors} = await expectFirstResult(engine, query, {
       name: "Aber",
       admin1: "Wales",
       country: "GB",
-    }
-    const got = {
-      name: result[0]["name"],
-      admin1: result[0]["admin1"],
-      country: result[0]["country"],
-    }
-
-    // Make sure we got the right one
-    deepStrictEqual(
-      got, want, JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
-    )
-    // Make sure we got the expected exact_match_factor
-    deepStrictEqual(
-      engine.debugOut.sortFactors[getEntryId(result[0])]['exact_match_factor'],
-      12,
-      JSON.stringify({want, got, result, debugOut: engine.debugOut}, null, 2),
-    )
+    }))
+    expectPreviousQuerySortFactor(sortFactors, entry, 'exact_match_factor', 12, query)
 
     // If I search for most of (not exactly) "Washington" I get Seattle in the first
     // couple results because it has the highest population among them. (Washington DC
@@ -175,14 +175,13 @@ async function testExactMatchFactor({engine}) {
 
     // If I search for an entry with no admin1, I don't want to get the bonus
     // of adding an admin1.
-    result = await engine.search("dover", {matching: false, sorting: true});
+    query = "dover"
+    result = await engine.search(query, {matching: false, sorting: true});
     const [dover_sg] = result.filter(r => r.name === "Dover" && r.country === "SG")
 
     // Make sure we got the expected exact_match_factor
-    deepStrictEqual(
-      engine.debugOut.sortFactors[getEntryId(dover_sg)]['exact_match_factor'],
-      8,
-      JSON.stringify({debugOut: engine.debugOut}, null, 2),
+    expectPreviousQuerySortFactor(
+      engine.debugOut.sortFactors, dover_sg, 'exact_match_factor', 8, query
     )
 }
 
@@ -196,10 +195,8 @@ async function testNumbers({engine}) {
     // A convenience function
     const checkLyon = (query, result, testLyon, expectedScore) => {
         // Make sure we got the expected exact_match_factor
-        deepStrictEqual(
-          engine.debugOut.sortFactors[getEntryId(testLyon)]['exact_match_factor'],
-          expectedScore,
-          JSON.stringify({query, result, debugOut: engine.debugOut}, null, 2),
+        expectPreviousQuerySortFactor(
+          engine.debugOut.sortFactors, testLyon, 'exact_match_factor', expectedScore, query
         )
     }
     let lyon, lyon_02, lyon_08, result, query
