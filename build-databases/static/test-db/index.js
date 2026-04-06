@@ -12,19 +12,7 @@
 
 import { deepStrictEqual } from 'assert';
 import { AddressTextualIndex } from "./static_search.js";
-import { fsFetchJson, listIndexFiles } from "./base.js";
-
-class MockMap {
-  constructor() {
-    this.center = {lng: 0, lat: 0}
-  }
-  getCenter() {
-    return this.center
-  }
-  setCenter(center) {
-    this.center = center
-  }
-}
+import { fsFetchJson, listIndexFiles, MockMap } from "./base.js";
 
 // Number of visible results when searching for something. We generally
 // want to make sure that what we're looking for is visible.

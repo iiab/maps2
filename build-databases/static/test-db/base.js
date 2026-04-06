@@ -1,6 +1,10 @@
 import * as fs from "fs"
 import * as zlib from "zlib"
 
+////////////
+//   Fetch
+////////////
+
 // we'll be doing so many file reads, and the files are so small - we may as well cache all of it
 // fileCache[path] = contents
 const fileCache = {}
@@ -72,5 +76,21 @@ export function* listIndexFiles(outputDir) {
         if (jsonFName === "index_metadata.json") continue;
         yield `${outputDir}/${jsonFName}`
     }
+}
+
+////////////
+//   Map
+////////////
+
+export class MockMap {
+  constructor() {
+    this.center = {lng: 0, lat: 0}
+  }
+  getCenter() {
+    return this.center
+  }
+  setCenter(center) {
+    this.center = center
+  }
 }
 
