@@ -51,7 +51,15 @@ function skipEntry(
 const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
 
 async function expectFirstResults(engine, query, want) {
-    const result = await engine.search(query, {matching: false, sorting: true, queryTokens: true, candidateTokens: false})
+    let result
+
+    try {
+      result = await engine.search(query, {queryTokens: true, matching: false, sorting: true, candidateTokens: false})
+    } catch (err) {
+      throw JSON.stringify({
+        query, want, debugOut: engine.debugOut
+      }, null, 2) + "\n" + err.stack
+    }
     if (result.length === 0) {
       throw "Query got no results:\n" + JSON.stringify({query, want, debugOut: engine.debugOut}, null, 2)
     }
@@ -243,7 +251,7 @@ async function testDistanceFactor({engine}) {
     // Dover New Hampshire, and Dover Delaware. Expect the nearest Dover to
     // show up first in the results.
 
-    let result, query, want, got
+    let query
 
     query = "dover"
 
@@ -416,6 +424,19 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
     }
 }
 
+async function testShortTokens({engine}) {
+    console.log("testShortTokens")
+
+    // Our target token size is 3 but we have stuff that's smaller. It's handled
+    // differently. Let's make sure it works in queries with only smaller terms.
+
+    await expectFirstResults(engine, "S\u00e9 MO", [{
+      name: "S\u00e9",
+      admin1: undefined,
+      country: "MO"
+    }])
+}
+
 async function makeSetup(outputDir) {
     const map = new MockMap()
     const windowObj = {}
@@ -437,6 +458,7 @@ async function main() {
     await testWeirdCharacters(realDBSetup) // real DB because we want to make sure that the database generator puts things in the right json file
     await testDistanceFactor(testDBSetup)
     await testPopulationFactor(testDBSetup)
+    await testShortTokens(testDBSetup)
 
     // Test reachability. Splitting out two problem cases.
     //
