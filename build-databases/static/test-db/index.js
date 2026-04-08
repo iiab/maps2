@@ -379,7 +379,18 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
               engine.map.setCenter({lat: -Number(entry.lat), lng: Number(entry.lon) + 180})
             }
 
-            const result = await engine.search(query, {queryTokens: true})
+            let result
+            try {
+              result = await engine.search(query, {queryTokens: true})
+            } catch (err) {
+              throw JSON.stringify({
+                  fromFile: file.split('/').slice(-1),
+                  debugOut: engine.debugOut,
+                  query,
+                  result,
+                  want: entry,
+              }, null, 2) + "\n" + err.stack
+            }
             const visibleResults = result.slice(0, visibleResultsSize)
             for (const x of visibleResults) {
                 x.entryId = getEntryId(x)
