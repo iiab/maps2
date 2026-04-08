@@ -141,6 +141,16 @@ async function testWeirdCharacters({engine}) {
         country: "AO"
       }])
     }
+
+    // Try searching with two, one, and zero single quotes.
+    // We had a bug if two single quotes were in the entry
+    for (const query of ["Ca' d'Andrea", "d'Andrea", "dandrea"]) {
+      await expectFirstResults(engine, query, [{
+        name: "Ca' d'Andrea",
+        admin1: "Lombardy",
+        country: "IT",
+      }])
+    }
 }
 
 async function testExactMatchFactor({engine}) {
