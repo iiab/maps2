@@ -51,9 +51,9 @@ function skipEntry(
 const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
 
 async function expectFirstResults(engine, query, want) {
-    const result = await engine.search(query, {matching: false, sorting: true})
+    const result = await engine.search(query, {matching: false, sorting: true, queryTokens: true, candidateTokens: false})
     if (result.length === 0) {
-      throw "Query got no results:\n" + JSON.stringify({query, want}, null, 2)
+      throw "Query got no results:\n" + JSON.stringify({query, want, debugOut: engine.debugOut}, null, 2)
     }
     // `got` should be the first so many items of `results`,
     // and it should be the same length as `want`. If there
@@ -369,7 +369,7 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
               engine.map.setCenter({lat: -Number(entry.lat), lng: Number(entry.lon) + 180})
             }
 
-            const result = await engine.search(query)
+            const result = await engine.search(query, {queryTokens: true})
             const visibleResults = result.slice(0, visibleResultsSize)
             for (const x of visibleResults) {
                 x.entryId = getEntryId(x)
