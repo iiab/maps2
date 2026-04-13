@@ -23,10 +23,9 @@ if [ $# -gt 0 ] && [ $1 == "test" ]; then
 fi
 
 SOURCE=https://maps.black/$BASE.pmtiles
-DATA_DATE=$(date +%Y-%m-%d)
-OSM_Z14=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-14.pmtiles
-OSM_Z9=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-09.pmtiles
-OSM_Z1=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-01.pmtiles
+OSM_Z14=openstreetmap-openmaptiles.$DATA_DATE.z00-z14.pmtiles
+OSM_Z9=openstreetmap-openmaptiles.$DATA_DATE.z00-z09.pmtiles
+OSM_Z1=openstreetmap-openmaptiles.$DATA_DATE.z00-z01.pmtiles
 
 echo "The latest $SOURCE is from..."
 echo
