@@ -24,7 +24,7 @@ fi
 
 SOURCE=https://maps.black/$BASE.pmtiles
 DATA_DATE=$(date +%Y-%m-%d)
-FULL=openstreetmap-openmaptiles.$DATA_DATE.full.pmtiles
+OSM_Z14=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-14.pmtiles
 OSM_Z9=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-09.pmtiles
 OSM_Z1=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-01.pmtiles
 
@@ -39,17 +39,17 @@ echo "To not use this version, hit ctrl-c. Otherwise hit enter to continue."
 read
 
 # Get the original pmtiles file
-if [ ! -f $FULL ]; then
-    wget $SOURCE -O $FULL.tmp
+if [ ! -f $OSM_Z14 ]; then
+    wget $SOURCE -O $OSM_Z14.tmp
 
     # only on success, so we don't download it again
-    mv $FULL.tmp $FULL
+    mv $OSM_Z14.tmp $OSM_Z14
 fi
 
 # Extract the zoom-9 pmtiles file from the original
 if [ ! -f $OSM_Z9 ]; then
     # Extract the smaller file
-    ./pmtiles extract $FULL $OSM_Z9.tmp --maxzoom=9
+    ./pmtiles extract $OSM_Z14 $OSM_Z9.tmp --maxzoom=9
 
     # only on success, so we don't extract it again
     mv $OSM_Z9.tmp $OSM_Z9
@@ -58,7 +58,7 @@ fi
 # Extract the zoom-1 pmtiles file from the original
 if [ ! -f $OSM_Z1 ]; then
     # Extract the smaller file
-    ./pmtiles extract $FULL $OSM_Z1.tmp --maxzoom=1
+    ./pmtiles extract $OSM_Z14 $OSM_Z1.tmp --maxzoom=1
 
     # only on success, so we don't extract it again
     mv $OSM_Z1.tmp $OSM_Z1
