@@ -23,9 +23,6 @@ if [ $# -gt 0 ] && [ $1 == "test" ]; then
 fi
 
 SOURCE=https://maps.black/$BASE.pmtiles
-OSM_Z14=openstreetmap-openmaptiles.$DATA_DATE.z00-z14.pmtiles
-OSM_Z9=openstreetmap-openmaptiles.$DATA_DATE.z00-z09.pmtiles
-OSM_Z1=openstreetmap-openmaptiles.$DATA_DATE.z00-z01.pmtiles
 
 echo "The latest $SOURCE is from..."
 echo
@@ -44,6 +41,10 @@ echo "for the next one? We wouldn't want it to change over mid-download!"
 echo
 echo "To not use this version, hit ctrl-c. Otherwise hit enter to continue."
 read
+
+OSM_Z14=openstreetmap-openmaptiles.$DATA_DATE.z00-z14.pmtiles
+OSM_Z9=openstreetmap-openmaptiles.$DATA_DATE.z00-z09.pmtiles
+OSM_Z1=openstreetmap-openmaptiles.$DATA_DATE.z00-z01.pmtiles
 
 # Get the original pmtiles file
 if [ ! -f $OSM_Z14 ]; then
