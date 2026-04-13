@@ -28,9 +28,17 @@ OSM_Z14=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-14.pmtiles
 OSM_Z9=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-09.pmtiles
 OSM_Z1=openstreetmap-openmaptiles.$DATA_DATE.zoom_0-01.pmtiles
 
-echo "The latest $SOURCE is from:"
+echo "The latest $SOURCE is from..."
 echo
-curl -Is $SOURCE | grep last-modified | cut -c 16-
+
+DATA_DATE=$(
+  curl -Is $SOURCE |
+  grep last-modified |
+  cut -c 16- |
+  python3 -c "import sys, dateparser; dt = dateparser.parse(sys.stdin.read()); print(dt.date())"
+)
+echo $DATA_DATE
+
 echo
 echo "These are expected to be released once a month. If this is close to a month old, perhaps wait"
 echo "for the next one? We wouldn't want it to change over mid-download!"
