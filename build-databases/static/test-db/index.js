@@ -18,34 +18,6 @@ import { fsFetchJson, listIndexFiles, MockMap } from "./base.js";
 // want to make sure that what we're looking for is visible.
 const visibleResultsSize = 5
 
-// Determine whether to skip the entry.
-// Allow for tests that skip certain entries based on token length.
-function skipEntry(
-  entry,             // the thing being searched for
-  fileTokenLength,   // length of token prefix used for (ideal) json file names (for short names, actual files could be shorter!)
-  filter,            // based on the fileTokenLength, the actual file token, and maybe other
-) {
-    // Base filename for search index shard. i.e. <fileToken>.json
-    //
-    // Generally we don't want to replicate this "file token" logic because it's
-    // part of what we are testing in the production code. However, in this case
-    // it's only for the purpose of splitting the test cases into groups. At the
-    // end of the day, we want them all to pass regardless, and we could ideally
-    // remove this function entirely.
-    const fileToken = entry['name'].normalize("NFD").replace(/\p{Diacritic}/gu, "")
-                       .replace(/^[^\p{N}|\p{L}]+/u, '')
-                       .replace("'", '')
-                       .split(/[^\p{L}]+/u)[0]
-
-    if (!filter({fileToken, fileTokenLength})) {
-        // console.log('no', fileToken, fileToken.length, entry['name'])
-        return true
-    }
-
-    // console.log('yes', fileToken, fileToken.length, entry)
-    return false
-}
-
 // This function turns an entry into a unique string that identifies it.
 // static_search.js has the same logic.
 const getEntryId = item => `${item.name}...${item.admin1 || ""}...${item.country}...${item.pop || 0}...${item.lat}...${item.lon}`
@@ -355,8 +327,8 @@ async function testPopulationFactor({engine}) {
 // different categories of entries (as of this writing, we're splitting between those
 // having short first terms and those not). Perhaps this will go away and we'll have
 // just one test once we fix everything.
-async function testReachability({engine, indexMetadata, outputDir}, filter, description) {
-    console.log("testReachability:", description)
+async function testReachability({engine, indexMetadata, outputDir}) {
+    console.log("testReachability")
 
     // Get the token length from the metadata file within the database
     const fileTokenLength = Number(indexMetadata['token_length'])
@@ -373,9 +345,6 @@ async function testReachability({engine, indexMetadata, outputDir}, filter, desc
                 continue
             }
             seen.add(entry.entryId)
-            if (skipEntry(entry, fileTokenLength, filter)) {
-                continue
-            }
 
             const query = entry.admin1 ? `${entry.name} ${entry.admin1}` : `${entry.name} ${entry.country}`
 
@@ -459,16 +428,11 @@ async function main() {
     await testDistanceFactor(testDBSetup)
     await testPopulationFactor(testDBSetup)
     await testShortTokens(testDBSetup)
+    await testReachability(realDBSetup)
 
-    // Test reachability. Splitting out two problem cases.
-    //
-    // 1) Within the right fileTokenLength (3) - fails I think because of issues parsing out tokens
-    await testReachability(realDBSetup, ({fileToken, fileTokenLength}) => fileToken.length >= fileTokenLength, "normal token length")
-    // 2) Less than fileTokenLength - fails because we don't handle the requesting of such files yet.
-    // TODO - if we do this, we need to shorten the mininmum amount of characters typed into the search bar before showing results?
+    // TODO - for short queries, we need to shorten the mininmum amount of characters typed into the search bar before showing results?
     // unless the total length will always be more than 3, so we should just keep it as-is? So I guess it would be like, "ab " and
     // that's enough for a search. Which is fine. If there's anything, it should come up with something.
-    await testReachability(realDBSetup, ({fileToken, fileTokenLength}) => fileToken.length < fileTokenLength, "shorter token length")
 }
 
 main()
