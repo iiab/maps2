@@ -43,7 +43,7 @@ echo "To not use this version, hit ctrl-c. Otherwise hit enter to continue."
 read
 
 OSM_Z14=openstreetmap-openmaptiles.$DATA_DATE.z00-z14.pmtiles
-OSM_Z9=openstreetmap-openmaptiles.$DATA_DATE.z00-z09.pmtiles
+OSM_Z11=openstreetmap-openmaptiles.$DATA_DATE.z00-z11.pmtiles
 OSM_Z1=openstreetmap-openmaptiles.$DATA_DATE.z00-z01.pmtiles
 
 # Get the original pmtiles file
@@ -55,12 +55,12 @@ if [ ! -f $OSM_Z14 ]; then
 fi
 
 # Extract the zoom-9 pmtiles file from the original
-if [ ! -f $OSM_Z9 ]; then
+if [ ! -f $OSM_Z11 ]; then
     # Extract the smaller file
-    ./pmtiles extract $OSM_Z14 $OSM_Z9.tmp --maxzoom=9
+    ./pmtiles extract $OSM_Z14 $OSM_Z11.tmp --maxzoom=11
 
     # only on success, so we don't extract it again
-    mv $OSM_Z9.tmp $OSM_Z9
+    mv $OSM_Z11.tmp $OSM_Z11
 fi
 
 # Extract the zoom-1 pmtiles file from the original
