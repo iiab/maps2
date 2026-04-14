@@ -31,7 +31,7 @@ DATA_DATE=$(
   curl -Is $SOURCE |
   grep last-modified |
   cut -c 16- |
-  python3 -c "import sys, dateparser; dt = dateparser.parse(sys.stdin.read()); print(dt.date())"
+  python3 -c "import sys, dateparser; dt = dateparser.parse(sys.stdin.read()); (dt or sys.exit('Failed to get publish date for maps.black vector tiles.')); print(dt.date())"
 )
 echo $DATA_DATE
 
