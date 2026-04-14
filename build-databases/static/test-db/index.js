@@ -399,11 +399,13 @@ async function testShortTokens({engine}) {
     // Our target token size is 3 but we have stuff that's smaller. It's handled
     // differently. Let's make sure it works in queries with only smaller terms.
 
-    await expectFirstResults(engine, "S\u00e9 MO", [{
-      name: "S\u00e9",
-      admin1: undefined,
-      country: "MO"
-    }])
+    for (const query of ["S\u00e9 MO", "se mo"]) {
+        await expectFirstResults(engine, query, [{
+          name: "S\u00e9",
+          admin1: undefined,
+          country: "MO"
+        }])
+    }
 }
 
 async function makeSetup(outputDir) {
