@@ -204,7 +204,11 @@ def write_cities(cities):
         with gzip.open(os.path.join(TMP_OUTPUT_DIR, f"{prefix}.json.gz"), "wt") as outfile:
             outfile.write(json.dumps(entries, indent=2))
     with gzip.open(os.path.join(TMP_OUTPUT_DIR, "index_metadata.json.gz"), "wt") as outfile:
-        outfile.write(json.dumps({"stopwords": [""], "token_length": 3}, indent=2))
+        outfile.write(json.dumps({
+            "stopwords": [""],
+            "token_length": 3,
+            "num_cities": len(cities),
+        }, indent=2))
 
     tar = tarfile.open("static-search.2025-12-10.pop-1k-cities.tar.gz", "w:gz")
     for name in os.listdir(TMP_OUTPUT_DIR):
