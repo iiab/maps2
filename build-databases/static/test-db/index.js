@@ -406,6 +406,21 @@ async function testShortTokens({engine}) {
           country: "MO"
         }])
     }
+
+    // "ne br" will return New Brunswick because it's in ne.json (we're pretending
+    // that it's a high ranking entry that made it into the two-letter files)
+    await expectFirstResults(engine, "ne br", [{
+      name: "New Brunswick",
+      admin1: "New Jersey",
+      country: "US"
+    }])
+
+    // "ne bri" will return New Brighton because bri has three characters and will lead it to look in bri.json
+    await expectFirstResults(engine, "ne bri", [{
+      name: "New Brighton",
+      admin1: "Alberta",
+      country: "CA"
+    }])
 }
 
 async function makeSetup(outputDir) {
