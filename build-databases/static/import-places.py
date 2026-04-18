@@ -1,6 +1,7 @@
 import csv, gzip, regex, requests, json, os, tarfile, unicodedata, zipfile
 from io import BytesIO, StringIO, TextIOWrapper
 from collections import defaultdict, namedtuple
+from datetime import date
 
 # `city_identifier` uniquely identifies a city
 city_identifier = namedtuple("city_identifier", ["name", "admin1", "country"])
@@ -210,7 +211,7 @@ def write_cities(cities):
             "num_cities": len(cities),
         }, indent=2))
 
-    tar = tarfile.open("static-search.2025-12-10.pop-1k-cities.tar.gz", "w:gz")
+    tar = tarfile.open(f"static-search.{date.today()}.pop-1k-cities.tar.gz", "w:gz")
     for name in os.listdir(TMP_OUTPUT_DIR):
         tar.add(os.path.join(TMP_OUTPUT_DIR, name))
     tar.close()
