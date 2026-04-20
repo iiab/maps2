@@ -282,16 +282,10 @@ async function testDistanceFactor({engine}) {
       admin1: "Idaho",
       country: "US",
     }])
-
-// TODO - Maybe make a balance test. Exact match vs distance vs population?
-// TODO Test that distance gives us a useful factor. Probably test the Dovers of the world, a lot of them have similar populations
-//     Hopefully we can balance all of the factors with the help of all of these factor tests.
-// TODO Make sure I got my "lng" vs "lon" in order. I'm using both in different parts of the code. Should I be?
 }
 
 async function testPopulationFactor({engine}) {
     console.log("testPopulationFactor (TODO)")
-// TODO - test that I get the desired "population factor". Probably logarithmic?
 }
 
 // Test that every name in the search index is searchable with our current
@@ -436,10 +430,6 @@ async function main() {
     await testPopulationFactor(testDBSetup)
     await testShortTokens(testDBSetup)
     await testReachability(realDBSetup)
-
-    // TODO - for short queries, we need to shorten the mininmum amount of characters typed into the search bar before showing results?
-    // unless the total length will always be more than 3, so we should just keep it as-is? So I guess it would be like, "ab " and
-    // that's enough for a search. Which is fine. If there's anything, it should come up with something.
 }
 
 main()
