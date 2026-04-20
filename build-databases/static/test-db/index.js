@@ -1,15 +1,3 @@
-/*
- * TODO:
- *
- * Go through the database, make sure that:
- *   * the normalization matches the Python normalization
- *   * most importantly: the file name matches the first X characters of each name. i.e. make sure I can reach each result
- *
- * Test sorting:
- *   * Make sure the different sorting methods give me what I expect. Make test cases that I can run as I add more complicated sorting.
- *   * Check out the repo and grab the js file as-is to make sure the test is accurate.
-*/
-
 import { deepStrictEqual } from 'assert';
 import { AddressTextualIndex } from "./static_search.js";
 import { fsFetchJson, listIndexFiles, MockMap } from "./base.js";
