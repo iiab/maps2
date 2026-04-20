@@ -368,11 +368,11 @@ async function testReachability({engine, indexMetadata, outputDir}) {
 
             // Let's also double check that the entry meets some other assumptions.
             // Not checking if entry.admin1 is truthy; it's optional
-            // Not checking if entry.pop is truthy; it's sometimes 0? or missing?
-            deepStrictEqual(Boolean(entry.name), true, errOut)
-            deepStrictEqual(Boolean(entry.country), true, errOut)
-            deepStrictEqual(Boolean(entry.lat), true, errOut)
-            deepStrictEqual(Boolean(entry.lon), true, errOut)
+            deepStrictEqual(Boolean(entry.name.length), true, errOut)
+            deepStrictEqual(Boolean(entry.country.length), true, errOut)
+            deepStrictEqual(Boolean(entry.lat.length), true, errOut)
+            deepStrictEqual(Boolean(entry.lon.length), true, errOut)
+            deepStrictEqual(Boolean(entry.pop.length), true, errOut)
         }
     }
 }
