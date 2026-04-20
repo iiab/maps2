@@ -372,23 +372,25 @@ async function testReachability({engine, indexMetadata, outputDir}) {
             for (const x of visibleResults) {
                 x.entryId = getEntryId(x)
             }
-            deepStrictEqual(
-                visibleResults.some(r =>
-                    entry.entryId == r.entryId &&
+            const errOut = JSON.stringify({
+                fromFile: file.split('/').slice(-1),
+                debugOut: engine.debugOut,
+                query,
+                result,
+                want: entry,
+            }, null, 2)
 
-                    // Not checking if entry.admin1 is truthy; it's optional
-                    // Not checking if entry.pop is truthy; it's sometimes 0? or missing?
-                    entry.name && entry.country && entry.lat && entry.lon
-                ),
-                true,
-                JSON.stringify({
-                    fromFile: file.split('/').slice(-1),
-                    debugOut: engine.debugOut,
-                    query,
-                    result,
-                    want: entry,
-                }, null, 2),
-            )
+            // Let's confirm that the entry shows up in visible results
+            deepStrictEqual(Boolean(visibleResults.length), true, errOut)
+            deepStrictEqual(visibleResults.some(r => entry.entryId == r.entryId), true, errOut)
+
+            // Let's also double check that the entry meets some other assumptions.
+            // Not checking if entry.admin1 is truthy; it's optional
+            // Not checking if entry.pop is truthy; it's sometimes 0? or missing?
+            deepStrictEqual(Boolean(entry.name), true, errOut)
+            deepStrictEqual(Boolean(entry.country), true, errOut)
+            deepStrictEqual(Boolean(entry.lat), true, errOut)
+            deepStrictEqual(Boolean(entry.lon), true, errOut)
         }
     }
 }
