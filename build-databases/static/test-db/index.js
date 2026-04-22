@@ -1,6 +1,6 @@
 import { deepStrictEqual } from 'assert';
 import { AddressTextualIndex } from "./static_search.js";
-import { fsFetchJson, listIndexFiles, MockMap } from "./base.js";
+import { fsFetchJson, listIndexFiles, getCompressedSize, MockMap } from "./base.js";
 
 // Number of visible results when searching for something. We generally
 // want to make sure that what we're looking for is visible.
@@ -52,6 +52,26 @@ function expectPreviousQuerySortFactor(sortFactors, entry, factorName, want, que
 
 async function expectEmpty(engine, query) {
     await deepStrictEqual((await engine.search(query)).length, 0)
+}
+
+// Make sure no json file is more than 1M compressed
+async function testFileSizes({outputDir}) {
+    console.log("testFileSizes")
+    const MAX_SIZE = 1024 * 512 // for now at least
+
+    const oversized = {}
+    for (const file of listIndexFiles(outputDir)) {
+        const size = getCompressedSize(file)
+        if (typeof size !== "number" || size === 0) {
+            throw "didn't get a valid file size"
+        }
+        if (size > MAX_SIZE) {
+            oversized[file.split('/').slice(-1)[0] + '.gz'] = Math.floor(size / 1024) + 'k'
+        }
+    }
+    if (Object.keys(oversized).length) {
+        throw "oversized compressed files in the database" + JSON.stringify(oversized, null, 2)
+    }
 }
 
 async function testBasic({engine}) {
@@ -420,6 +440,8 @@ async function main() {
 
     const testDBSetup = await makeSetup(testOutputDir)
     const realDBSetup = await makeSetup(realOutputDir)
+
+    await testFileSizes(realDBSetup)
 
     await testBasic(realDBSetup)
     await testExactMatchFactor(testDBSetup)

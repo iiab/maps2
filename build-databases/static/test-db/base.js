@@ -78,6 +78,11 @@ export function* listIndexFiles(outputDir) {
     }
 }
 
+// Get gzip file size
+export function getCompressedSize(path) {
+    return fs.statSync(path + '.gz').size
+}
+
 ////////////
 //   Map
 ////////////
