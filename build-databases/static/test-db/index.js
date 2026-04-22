@@ -409,8 +409,7 @@ async function testShortTokens({engine}) {
 
 async function makeSetup(outputDir) {
     const map = new MockMap()
-    const windowObj = {}
-    const engine = new AddressTextualIndex(map, outputDir, fsFetchJson, windowObj)
+    const engine = new AddressTextualIndex({map, baseURL: outputDir, fetcher: fsFetchJson})
     const indexMetadata = await (await fsFetchJson(`${outputDir}/index_metadata.json`)).json()
     return {outputDir, engine, indexMetadata}
 }
