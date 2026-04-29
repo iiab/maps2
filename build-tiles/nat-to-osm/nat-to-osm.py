@@ -12,18 +12,24 @@ def index_syntax(key):
     else:
         return f"[{key}]"
 
-def print_correction(val_a, val_b, trail):
+def print_correction(val_a, val_b, obj_a, obj_b, trail):
     if trail[-1] == 'source' and val_b == 'naturalearth-openmaptiles':
         return
 
-    print (
-        'style' + ''.join(
-            index_syntax(key) for key in trail
-        ) + " = " + str(val_b) +
-        f" # from {val_a}"
-    )
+    # Just gonna go ahead and assume that this is a maxzoom on the same id'd layer
+    assert trail[-1] in ['maxzoom', 'minzoom'], trail[-1]
+    assert obj_a['id'] == obj_b['id']
 
-def parse_structs(obj_a, obj_b, trail):
+    parent_obj_path = ''.join(index_syntax(key) for key in trail[:-1])
+    obj_path = ''.join(index_syntax(key) for key in trail)
+
+    print (f"if (styles{parent_obj_path}.id === '{obj_b['id']}') {{")
+    print (f"    styles{obj_path} = {val_b} # from {val_a}")
+    print (f"}} else {{")
+    print (f"    console.log(UNEXPECTED_ID_ERROR)")
+    print (f"}}")
+
+def parse_structs(obj_a, obj_b, parent_a, parent_b, trail):
     # print(trail)
     if isinstance(obj_a, dict):
         assert obj_a.keys() == obj_b.keys(), f"{trail} {obj_a.keys()} != {obj_b.keys()}"
@@ -34,13 +40,13 @@ def parse_structs(obj_a, obj_b, trail):
     else:
         # print (obj_a, obj_b)
         if obj_a != obj_b:
-            print_correction(obj_a, obj_b, trail)
+            print_correction(obj_a, obj_b, parent_a, parent_b, trail)
         return
 
     for key, val_a in iterable:
         val_b = obj_b[key]
         new_trail = trail + [key]
-        parse_structs(val_a, val_b, new_trail)
+        parse_structs(val_a, val_b, obj_a, obj_b, new_trail)
 
 # Don't worry about this part
 del file_b['sources']['naturalearth-openmaptiles']
@@ -51,4 +57,6 @@ del file_a['sources']['openstreetmap-openmaptiles']
 del file_b['sprite']
 del file_a['sprite']
 
-parse_structs(file_a, file_b, [])
+print ("UNEXPECTED_ID_ERROR = 'FILL ME IN'")
+print ()
+parse_structs(file_a, file_b, None, None, [])
