@@ -77,15 +77,31 @@ def compare_styles(osm_path, nat_path):
     del file_a['sources']['openstreetmap-openmaptiles']
 
     # Delete the sprite links but assert that the sprites dir (and everything else other than style.json) is identical
-    del file_b['sprite']
-    del file_a['sprite']
+    assert ('sprite' in file_a) == ('sprite' in file_b)
+    if 'sprite' in file_a:
+        del file_b['sprite']
+        del file_a['sprite']
     compare_style_dirs(osm_path, nat_path)
 
     print ("UNEXPECTED_ID_ERROR = 'FILL ME IN'")
     print ()
     parse_structs(file_a, file_b, None, None, [])
 
+print ("// for openfreemap/liberty")
+print ()
+
 compare_styles(
     "maps.black/styles/openstreetmap-openmaptiles/openfreemap/liberty",
     "maps.black/styles/naturalearth-openmaptiles/openfreemap/liberty",
+)
+print ()
+print ()
+print ()
+
+print ("// for maps.black/hybrid-2023")
+print ()
+
+compare_styles(
+    "maps.black/styles/openstreetmap-openmaptiles/maps.black/hybrid-2023",
+    "maps.black/styles/naturalearth-openmaptiles/maps.black/hybrid-2023",
 )
