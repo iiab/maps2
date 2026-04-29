@@ -1,11 +1,14 @@
 #!/usr/bin/python3
-import string, sys, json, os
+import string, sys, json, os, filecmp
 
 if not os.path.exists('maps.black'):
     sys.exit("Please make sure that maps.black repo is checked out in this directory")
 
-file_a = json.loads(open("maps.black/styles/openstreetmap-openmaptiles/openfreemap/liberty/style.json").read())
-file_b = json.loads(open("maps.black/styles/naturalearth-openmaptiles/openfreemap/liberty/style.json").read())
+osm_path = "maps.black/styles/openstreetmap-openmaptiles/openfreemap/liberty"
+nat_path = "maps.black/styles/naturalearth-openmaptiles/openfreemap/liberty"
+
+file_a = json.loads(open(os.path.join(osm_path, "style.json")).read())
+file_b = json.loads(open(os.path.join(nat_path, "style.json")).read())
 
 def index_syntax(key):
     if isinstance(key, str):
@@ -52,14 +55,32 @@ def parse_structs(obj_a, obj_b, parent_a, parent_b, trail):
         new_trail = trail + [key]
         parse_structs(val_a, val_b, obj_a, obj_b, new_trail)
 
+def compare_styles(dir_1, dir_2):
+    dcmp = filecmp.dircmp(osm_path, nat_path)
+
+    def recursive_diffs(dcmp, path=None):
+        path = path or []
+        files = (
+            [path + [file] for file in dcmp.diff_files] +
+            [path + [file] for file in dcmp.left_only] +
+            [path + [file] for file in dcmp.right_only]
+        )
+
+        for subdir, sub_dcmp in dcmp.subdirs.items():
+            files += recursive_diffs(sub_dcmp, path + [subdir])
+
+        return files
+
+    assert recursive_diffs(dcmp) == [['style.json']]
+
 # Don't worry about this part
 del file_b['sources']['naturalearth-openmaptiles']
 del file_a['sources']['openstreetmap-openmaptiles']
 
-# TODO - assert that the sprite files are identical
-
+# Delete the sprite links but assert that the sprites dir (and everything else other than style.json) is identical
 del file_b['sprite']
 del file_a['sprite']
+compare_styles(osm_path, nat_path)
 
 print ("UNEXPECTED_ID_ERROR = 'FILL ME IN'")
 print ()
