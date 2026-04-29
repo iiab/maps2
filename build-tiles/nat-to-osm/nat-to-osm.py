@@ -1,7 +1,11 @@
-import string, sys, requests
+#!/usr/bin/python3
+import string, sys, json, os
 
-file_b = requests.get("https://raw.githubusercontent.com/maps-black/maps.black/refs/heads/main/styles/naturalearth-openmaptiles/openfreemap/liberty/style.json").json()
-file_a = requests.get("https://raw.githubusercontent.com/maps-black/maps.black/refs/heads/main/styles/openstreetmap-openmaptiles/openfreemap/liberty/style.json").json()
+if not os.path.exists('maps.black'):
+    sys.exit("Please make sure that maps.black repo is checked out in this directory")
+
+file_a = json.loads(open("maps.black/styles/openstreetmap-openmaptiles/openfreemap/liberty/style.json").read())
+file_b = json.loads(open("maps.black/styles/naturalearth-openmaptiles/openfreemap/liberty/style.json").read())
 
 def index_syntax(key):
     if isinstance(key, str):
