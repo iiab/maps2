@@ -1,11 +1,7 @@
-import string, sys, json, requests
+import string, sys, requests
 
-# TODO - download the files from the git repo instead of getting them from file
-# https://raw.githubusercontent.com/maps-black/maps.black/refs/heads/main/styles/naturalearth-openmaptiles/openfreemap/liberty/style.json
-# https://raw.githubusercontent.com/maps-black/maps.black/refs/heads/main/styles/openstreetmap-openmaptiles/openfreemap/liberty/style.json
-
-file_a = json.loads(open(sys.argv[1]).read())
-file_b = json.loads(open(sys.argv[2]).read())
+file_b = requests.get("https://raw.githubusercontent.com/maps-black/maps.black/refs/heads/main/styles/naturalearth-openmaptiles/openfreemap/liberty/style.json").json()
+file_a = requests.get("https://raw.githubusercontent.com/maps-black/maps.black/refs/heads/main/styles/openstreetmap-openmaptiles/openfreemap/liberty/style.json").json()
 
 def index_syntax(key):
     if isinstance(key, str):
