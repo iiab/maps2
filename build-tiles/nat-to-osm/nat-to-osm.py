@@ -25,7 +25,7 @@ def print_correction(val_a, val_b, obj_a, obj_b, trail):
     obj_path = ''.join(index_syntax(key) for key in trail)
 
     print (f"if (style{parent_obj_path}.id === '{obj_b['id']}') {{")
-    print (f"    style{obj_path} = {val_b} # from {val_a}")
+    print (f"    style{obj_path} = {val_b} // from {val_a}")
     print ( "} else {")
     print ( "    console.log(UNEXPECTED_ID_ERROR)")
     print ( "}")
