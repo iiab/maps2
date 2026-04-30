@@ -26,9 +26,9 @@ def print_correction(val_a, val_b, obj_a, obj_b, trail):
 
     print (f"if (styles{parent_obj_path}.id === '{obj_b['id']}') {{")
     print (f"    styles{obj_path} = {val_b} # from {val_a}")
-    print ( "}} else {{")
+    print ( "} else {")
     print ( "    console.log(UNEXPECTED_ID_ERROR)")
-    print ( "}}")
+    print ( "}")
 
 def parse_structs(obj_a, obj_b, parent_a, parent_b, trail):
     # print(trail)
