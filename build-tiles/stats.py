@@ -12,7 +12,7 @@
 #
 # It'll give you a useful output, and you can poke at the data in the returned values.
 
-import importlib  
+import importlib
 foobar = importlib.import_module("tile-extract")
 
 def sample_sizes(super_region_type):
@@ -146,7 +146,7 @@ def sample_sizes(super_region_type):
    # Display something useful
     for size in all_sizes:
         print (size, 'km sq:')
-        for tiles_type in ['vector', 'satellite', 'terrain']:
+        for tiles_type in ['vector', 'satellite', 'terrain', 'total']:
             print (' ', tiles_type, ':')
             print ("    average")
             for size_type in ['transfer', 'archive']:
