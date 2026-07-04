@@ -23,8 +23,8 @@ wget --help > /dev/null
 
 # Get the cli app
 if [ ! -f ./pmtiles ]; then
-    wget https://github.com/protomaps/go-pmtiles/releases/download/v1.28.1/go-pmtiles_1.28.1_Linux_x86_64.tar.gz
-    tar xzf go-pmtiles_1.28.1_Linux_x86_64.tar.gz
+    wget https://github.com/protomaps/go-pmtiles/releases/download/v1.30.3/go-pmtiles_1.30.3_Linux_x86_64.tar.gz
+    tar xzf go-pmtiles_1.30.3_Linux_x86_64.tar.gz
 fi
 
 # Get the original pmtiles file
